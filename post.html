@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Article Detail - Home Inserts</title>
+  <meta name="description" content="Read full article on Home Inserts. Insights on home decor, landscaping, DIY projects, and interior design.">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="post">
+
+  <!-- Top Utilities Bar -->
+  <div class="header-top">
+    <div class="container">
+      <div>Welcome to Home Inserts – The Ultimate Hub for Home, Garden & DIY Guest Articles</div>
+      <div class="header-top-menu">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-conditions.html">Terms & Conditions</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <header id="header" class="ct-header">
+    <div class="header-main">
+      <div class="container">
+        <!-- Site Branding -->
+        <a href="index.html" class="site-branding" id="site-logo-link">
+          <div class="site-logo-icon">H</div>
+          <h1 class="site-title">Home<span>Inserts</span></h1>
+        </a>
+
+        <!-- Navigation Menu -->
+        <nav class="main-nav" aria-label="Main Navigation">
+          <ul class="nav-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="submission-guideline.html">Submission Guidelines</a></li>
+            <li><a href="submit-guest-post.html">Submit Guest Post</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+          
+          <button class="mobile-toggle" aria-label="Toggle Menu" id="mobile-menu-btn">☰</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Breadcrumbs Bar -->
+  <nav class="breadcrumbs" aria-label="Breadcrumbs">
+    <div class="container" id="breadcrumbs-nav">
+      <a href="index.html">Home</a> &nbsp;&raquo;&nbsp; <span>Loading...</span>
+    </div>
+  </nav>
+
+  <!-- Main Content Layout Section -->
+  <main class="main-layout" id="main-container">
+    <div class="container">
+      
+      <!-- Left Column: Article Single Post Layout -->
+      <section class="post-layout-single" id="single-post-container" aria-label="Article Details">
+        <div class="post-header">
+          <span class="card-category" id="post-category-badge">Category</span>
+          <h1 class="post-title" id="post-main-title">Article Title</h1>
+          <div class="post-meta-single">
+            <span>By <strong id="post-author">Author</strong></span>
+            <span>Published on <span id="post-date">Date</span></span>
+            <span>&bull;</span>
+            <span id="post-read-time">Read Time</span>
+          </div>
+        </div>
+
+        <img class="post-featured-img" id="post-featured-image" src="" alt="Featured Banner">
+
+        <!-- Entry Body Content -->
+        <div class="entry-content" id="post-body-content">
+          <p>Loading article content...</p>
+        </div>
+
+        <!-- Post Footer: Tags and Share -->
+        <div class="post-footer">
+          <div class="post-tags" id="post-tags-container">
+            <!-- Tags rendered dynamically -->
+          </div>
+          <div class="share-buttons" id="post-share-container">
+            <!-- Share buttons rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Comments Area -->
+        <section class="comments-area" aria-label="Comments Section">
+          <h3 class="comments-title" id="comments-count-title">0 Comments</h3>
+          <div class="comments-list" id="comments-list">
+            <!-- Comments loaded dynamically -->
+          </div>
+
+          <!-- Add Comment Form -->
+          <div class="widget" style="padding: 24px 0; border: none; background: none;">
+            <h3 class="widget-title">Leave a Comment</h3>
+            <form class="comment-form" id="comment-form">
+              <div class="form-group">
+                <label for="comment-name">Name *</label>
+                <input type="text" id="comment-name" class="form-control" required placeholder="Your Name">
+              </div>
+              <div class="form-group">
+                <label for="comment-text">Comment *</label>
+                <textarea id="comment-text" class="form-control" rows="5" required placeholder="Write your comment here..."></textarea>
+              </div>
+              <button type="submit" class="btn" style="width: auto; padding: 12px 30px;">Post Comment</button>
+            </form>
+          </div>
+        </section>
+
+      </section>
+
+      <!-- Right Column: Sidebar Widgets -->
+      <aside class="sidebar" id="sidebar" aria-label="Sidebar Widgets">
+        
+        <!-- Search Widget -->
+        <div class="widget">
+          <h3 class="widget-title">Search Articles</h3>
+          <form class="search-form" id="sidebar-search-form">
+            <input type="search" placeholder="Type keywords..." class="search-input" id="search-input-field" autocomplete="off" aria-label="Search inputs">
+            <button type="submit" aria-label="Submit search">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- Recent Posts Widget -->
+        <div class="widget">
+          <h3 class="widget-title">Recent Articles</h3>
+          <div class="widget-posts-list" id="recent-posts-list">
+            <!-- Loaded dynamically -->
+          </div>
+        </div>
+
+        <!-- Categories Widget -->
+        <div class="widget">
+          <h3 class="widget-title">Categories</h3>
+          <ul class="widget-categories-list" id="categories-list">
+            <!-- Loaded dynamically -->
+          </ul>
+        </div>
+
+        <!-- Newsletter Widget -->
+        <div class="widget newsletter-widget">
+          <h3 class="widget-title">Newsletter</h3>
+          <p class="newsletter-desc">Subscribe to get the latest guest blogging opportunities and home improvement insights directly in your inbox.</p>
+          <form class="newsletter-form" id="newsletter-subscribe">
+            <input type="email" placeholder="Your email address" id="newsletter-email" required aria-label="Newsletter email">
+            <button type="submit" class="btn">Subscribe Now</button>
+          </form>
+        </div>
+
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- Footer Section -->
+  <footer id="footer" class="ct-footer">
+    <div class="container">
+      <div class="footer-top">
+        
+        <!-- Col 1: Branding info -->
+        <div>
+          <div class="footer-logo">
+            <div class="site-logo-icon" style="box-shadow:none;">H</div>
+            <span>Home Inserts</span>
+          </div>
+          <p class="footer-desc">Home Inserts is a fast-growing publication platform serving clients and guest writers. We offer high-quality insights into remodeling, DIY designs, and architectural trends.</p>
+          <div class="social-links">
+            <a href="#" class="social-icon" aria-label="Facebook">F</a>
+            <a href="#" class="social-icon" aria-label="X (Twitter)">X</a>
+            <a href="#" class="social-icon" aria-label="Pinterest">P</a>
+            <a href="#" class="social-icon" aria-label="YouTube">Y</a>
+          </div>
+        </div>
+
+        <!-- Col 2: Quick Links -->
+        <div>
+          <h3 class="footer-title">Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="submission-guideline.html">Submission Guidelines</a></li>
+            <li><a href="submit-guest-post.html">Submit Guest Post</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Contact Info -->
+        <div>
+          <h3 class="footer-title">Contact & Guidelines</h3>
+          <ul class="footer-contact">
+            <li>
+              <svg width="18" height="18" viewBox="0 0 20 20"><path d="M10,0C4.5,0,0,4.5,0,10s4.5,10,10,10h5v-2h-5c-4.4,0-8-3.6-8-8s3.6-8,8-8s8,3.6,8,8v1.5c0,0.8-0.7,1.5-1.5,1.5S15,12.3,15,11.5V10c0-2.7-2.3-5-5-5s-5,2.3-5,5s2.3,5,5,5c1.4,0,2.7-0.6,3.6-1.6c0.6,0.9,1.7,1.6,2.9,1.6c1.9,0,3.5-1.6,3.5-3.5V10C20,4.5,15.5,0,10,0zM10,7c1.7,0,3,1.3,3,3s-1.3,3-3,3s-3-1.3-3-3S8.3,7,10,7z"/></svg>
+              <div>
+                <strong>Email:</strong><br>
+                <a href="mailto:contact@homeinserts.com">contact@homeinserts.com</a>
+              </div>
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 20 20"><path d="M9.3,0C4.4,0,0.4,4,0.4,8.9s4,8.9,8.9,8.9c0.8,0,1.5-0.1,2.2-0.3v-3.9c-0.6,1.7-1.4,2.7-2.2,2.7c-0.9,0-2-1.5-2.5-3.7h4.8v-1.5h-5c-0.1-0.7-0.1-1.4-0.1-2.2c0-0.8,0.1-1.5,0.2-2.2h5.6c0.1,0.7,0.2,1.4,0.2,2.2c0,0.2,0,0.4,0,0.6c0.4-0.4,0.9-0.6,1.5-0.6c0-0.8,0-1.5-0.1-2.2h2.8c0.2,0.7,0.3,1.4,0.3,2.2c0,0.5-0.1,1-0.2,1.5l1.3,0.9c0.2-0.8,0.3-1.6,0.3-2.4C18.1,4,14.2,0,9.3,0z"/></svg>
+              <div>
+                <strong>Website:</strong><br>
+                <a href="index.html">homeinserts.com</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <div class="container" style="padding:0;">
+          <p>Copyright &copy; 2026 - <a href="index.html">Home Inserts</a> | Designed by <a href="https://thenanosoft.com" target="_blank">Nanosoft</a></p>
+          <div>
+            <a href="privacy-policy.html">Privacy Policy</a> &nbsp;|&nbsp; 
+            <a href="terms-conditions.html">Terms & Conditions</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic -->
+  <script src="js/app.js"></script>
+  
+  <script>
+    // Handle Mobile Menu toggle
+    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+      const menu = document.querySelector('.nav-menu');
+      if (menu.style.display === 'flex') {
+        menu.style.display = '';
+      } else {
+        menu.style.display = 'flex';
+        menu.style.flexDirection = 'column';
+        menu.style.position = 'absolute';
+        menu.style.top = '100%';
+        menu.style.left = '0';
+        menu.style.width = '100%';
+        menu.style.backgroundColor = '#fff';
+        menu.style.padding = '20px';
+        menu.style.borderBottom = '1px solid var(--color-border)';
+        menu.style.boxShadow = '0 10px 15px rgba(0,0,0,0.05)';
+      }
+    });
+  </script>
+</body>
+</html>

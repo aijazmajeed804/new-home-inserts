@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Home Inserts</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .login-body {
+      background: radial-gradient(circle at center, #2c3e50, var(--color-heading));
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-card {
+      background: var(--color-bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transform: translateY(0);
+      transition: var(--transition);
+    }
+    .login-card:hover {
+      transform: translateY(-2px);
+    }
+    .login-logo {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--color-heading);
+      margin-bottom: 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .login-logo span {
+      color: var(--color-primary);
+    }
+    .login-logo .site-logo-icon {
+      width: 42px;
+      height: 42px;
+      font-size: 22px;
+    }
+    .shake {
+      animation: shake 0.5s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+      20%, 40%, 60%, 80% { transform: translateX(10px); }
+    }
+  </style>
+</head>
+<body class="login-body">
+
+  <div class="login-card" id="login-card">
+    <div class="login-logo">
+      <div class="site-logo-icon">H</div>
+      <span>Home<span>Inserts</span></span>
+    </div>
+    <h2 style="font-size: 20px; color: var(--color-heading); margin-bottom: 8px;">Admin Dashboard</h2>
+    <p style="font-size: 13px; color: var(--color-body-light); margin-bottom: 24px;">Sign in to manage posts and submissions</p>
+
+    <form id="login-form">
+      <div class="form-group" style="text-align: left;">
+        <label for="login-email">Email Address</label>
+        <input type="email" id="login-email" class="form-control" required placeholder="admin@homeinserts.com">
+      </div>
+      <div class="form-group" style="text-align: left; margin-bottom: 24px;">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" class="form-control" required placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn" style="padding: 14px; font-size: 15px;">Sign In</button>
+    </form>
+    
+    <div style="margin-top: 24px;">
+      <a href="index.html" style="font-size: 13px; color: var(--color-body-light);">&larr; Back to Homepage</a>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Handle admin login logic
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('login-email').value.trim();
+      const pass = document.getElementById('login-password').value;
+      const card = document.getElementById('login-card');
+
+      // Hardcoded login check for user credentials
+      if (email === 'aijazmajeed804@gmail.com' && pass === 'aijazmajeed@@1243') {
+        showToast('Login successful! Redirecting...', 'success');
+        sessionStorage.setItem('home_inserts_admin_logged_in', 'true');
+        
+        setTimeout(() => {
+          window.location.href = 'admin.html';
+        }, 1200);
+      } else {
+        // Trigger shake effect and display error toast
+        card.classList.add('shake');
+        showToast('Invalid email or password.', 'error');
+        
+        setTimeout(() => {
+          card.classList.remove('shake');
+        }, 600);
+      }
+    });
+  </script>
+</body>
+</html>

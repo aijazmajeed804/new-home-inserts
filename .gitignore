@@ -1,0 +1,18 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor folders
+.vscode/
+.idea/
+
+# Node (if ever used)
+node_modules/
+npm-debug.log*
+
+# Local server script (not needed in repo)
+server.ps1
+
+# Logs
+*.log

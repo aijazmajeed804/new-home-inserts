@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Home Inserts</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Layout ─────────────────────────────────────────── */
+    .admin-layout-wrapper {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ─────────────────────────────────────────── */
+    .admin-sidebar {
+      background: linear-gradient(175deg, #0f1923 0%, #1a2535 100%);
+      color: #fff;
+      padding: 28px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 6px;
+    }
+    .admin-brand-icon {
+      width: 36px; height: 36px;
+      background: var(--color-primary);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 18px; color: #fff;
+      flex-shrink: 0;
+    }
+    .admin-brand-title { font-size: 17px; font-weight: 800; color: #fff; }
+    .admin-brand-title span { color: var(--color-primary); }
+    .admin-nav-section { font-size: 10px; font-weight: 700; color: #5a7090; letter-spacing: 1.2px; text-transform: uppercase; padding: 0 12px; }
+    .admin-nav-links { display: flex; flex-direction: column; gap: 3px; }
+    .admin-nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 14px; color: #8ba4bc;
+      border-radius: 9px; font-weight: 500; font-size: 14px;
+      cursor: pointer; transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+    .admin-nav-item .nav-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+    .admin-nav-item:hover { color: #fff; background: rgba(255,255,255,0.06); }
+    .admin-nav-item.active {
+      color: #fff; background: rgba(99,179,237,0.12);
+      border-color: rgba(99,179,237,0.25);
+    }
+    .admin-nav-item.active .nav-icon { color: var(--color-primary); }
+
+    /* ── Main Content ─────────────────────────────────────── */
+    .admin-content-area {
+      background: #f4f6f9;
+      padding: 36px 40px;
+      overflow-y: auto;
+    }
+    .admin-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 32px; background: #fff;
+      border: 1px solid var(--color-border); border-radius: 12px;
+      padding: 18px 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .admin-header-left h2 { font-size: 20px; color: var(--color-heading); margin: 0; }
+    .admin-header-left span { font-size: 13px; color: var(--color-body-light); }
+
+    /* ── Stats Grid ──────────────────────────────────────── */
+    .admin-stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+      margin-bottom: 32px;
+    }
+    .admin-stat-card {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: 12px; padding: 22px 20px;
+      display: flex; flex-direction: column; gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: box-shadow 0.2s;
+    }
+    .admin-stat-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+    .stat-icon { font-size: 22px; margin-bottom: 4px; }
+    .admin-stat-num { font-size: 30px; font-weight: 800; color: var(--color-heading); line-height: 1; }
+    .stat-label { font-size: 11px; font-weight: 700; color: var(--color-body-light); letter-spacing: 0.8px; text-transform: uppercase; }
+
+    /* ── Table ───────────────────────────────────────────── */
+    .table-wrapper { background: #fff; border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th, .admin-table td {
+      padding: 14px 20px; text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .admin-table th { background: #fafbfc; font-weight: 600; font-size: 12px; color: var(--color-body-light); text-transform: uppercase; letter-spacing: 0.6px; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: #fafbfc; }
+
+    /* ── Action Buttons ──────────────────────────────────── */
+    .action-btn {
+      padding: 5px 11px; border-radius: 6px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      border: none; transition: all 0.18s; margin-right: 4px;
+    }
+    .btn-delete { background: #fce8e6; color: #d93025; }
+    .btn-delete:hover { background: #d93025; color: #fff; }
+    .btn-approve { background: #e6f4ea; color: #137333; }
+    .btn-approve:hover { background: #137333; color: #fff; }
+    .btn-edit { background: #e8f0fe; color: #1967d2; }
+    .btn-edit:hover { background: #1967d2; color: #fff; }
+    .btn-view { background: #f1f3f4; color: #444; }
+    .btn-view:hover { background: #444; color: #fff; }
+
+    /* ── Tab Content ─────────────────────────────────────── */
+    .admin-tab-content { display: none; }
+    .admin-tab-content.active { display: block; }
+    .tab-section-title {
+      font-size: 20px; font-weight: 800; color: var(--color-heading);
+      margin-bottom: 8px;
+    }
+    .tab-section-sub { font-size: 13px; color: var(--color-body-light); margin-bottom: 24px; }
+
+    /* ── Form Card ───────────────────────────────────────── */
+    .form-card {
+      background: #fff; border: 1px solid var(--color-border);
+      border-radius: 14px; padding: 32px 36px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+    .form-section-header {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 15px; font-weight: 700; color: var(--color-heading);
+      margin: 28px 0 16px;
+      padding-bottom: 10px; border-bottom: 2px solid #f0f2f5;
+    }
+    .form-section-header:first-child { margin-top: 0; }
+    .form-section-header .section-icon { font-size: 18px; }
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .form-group { margin-bottom: 0; }
+    .form-group label { font-size: 13px; font-weight: 600; color: var(--color-heading); display: block; margin-bottom: 7px; }
+    .form-group label .optional-tag { font-weight: 400; color: var(--color-body-light); font-size: 12px; }
+    .form-control {
+      width: 100%; padding: 10px 14px; font-size: 14px;
+      border: 1.5px solid #dce1e7; border-radius: 8px;
+      outline: none; transition: border 0.18s, box-shadow 0.18s;
+      font-family: inherit; color: var(--color-heading); background: #fafbfc;
+      box-sizing: border-box;
+    }
+    .form-control:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 99,102,241), 0.1); background: #fff; }
+    textarea.form-control { resize: vertical; min-height: 120px; }
+    .char-count { font-size: 11px; color: var(--color-body-light); text-align: right; margin-top: 4px; }
+    .char-count.warning { color: #ea8c23; }
+    .char-count.over { color: #d93025; }
+
+    /* SEO Preview Box */
+    .seo-preview {
+      background: #f8f9fa; border: 1px solid #e0e4e8;
+      border-radius: 10px; padding: 18px 20px; margin-top: 18px;
+    }
+    .seo-preview-title { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+    .seo-preview-inner { font-family: Arial, sans-serif; }
+    .seo-preview-url { font-size: 13px; color: #1a73e8; margin-bottom: 2px; }
+    .seo-preview-heading { font-size: 18px; color: #1a0dab; font-weight: 400; text-decoration: underline; cursor: pointer; }
+    .seo-preview-desc { font-size: 13px; color: #545454; line-height: 1.5; }
+
+    /* Edit Mode Banner */
+    .edit-mode-banner {
+      display: none;
+      background: linear-gradient(90deg, #1967d2, #4285f4);
+      color: #fff; padding: 12px 20px; border-radius: 10px;
+      margin-bottom: 22px; align-items: center; gap: 14px;
+      font-size: 14px; font-weight: 500;
+    }
+    .edit-mode-banner.visible { display: flex; }
+    .edit-mode-banner strong { font-weight: 700; }
+    .edit-mode-banner .cancel-edit-btn {
+      margin-left: auto; background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4); color: #fff;
+      padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 13px;
+      font-weight: 600;
+    }
+    .edit-mode-banner .cancel-edit-btn:hover { background: rgba(255,255,255,0.3); }
+    #form-submit-btn.update-mode { background: linear-gradient(135deg, #1967d2, #4285f4); }
+
+    /* Status badge */
+    .status-badge {
+      display: inline-block; padding: 3px 9px; border-radius: 100px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.4px;
+    }
+    .status-active { background: #e6f4ea; color: #137333; }
+    .status-pending { background: #fef9c3; color: #9a6700; }
+  </style>
+</head>
+<body>
+
+  <!-- Access Control Check -->
+  <script>
+    if (sessionStorage.getItem('home_inserts_admin_logged_in') !== 'true') {
+      window.location.href = 'login.html';
+    }
+  </script>
+
+  <div class="admin-layout-wrapper">
+
+    <!-- ══════════════════ SIDEBAR ══════════════════ -->
+    <aside class="admin-sidebar" aria-label="Admin Navigation">
+      <div class="admin-brand">
+        <div class="admin-brand-icon">H</div>
+        <div class="admin-brand-title">Home<span>Inserts</span></div>
+      </div>
+
+      <div>
+        <div class="admin-nav-section" style="margin-bottom:8px;">Main</div>
+        <nav class="admin-nav-links" aria-label="Admin Tab Control">
+          <div class="admin-nav-item active" data-tab="overview"><span class="nav-icon">📊</span> Dashboard</div>
+          <div class="admin-nav-item" data-tab="articles"><span class="nav-icon">📰</span> Manage Articles</div>
+          <div class="admin-nav-item" data-tab="create"><span class="nav-icon">✏️</span> Publish Article</div>
+        </nav>
+      </div>
+
+      <div>
+        <div class="admin-nav-section" style="margin-bottom:8px;">Inbox</div>
+        <nav class="admin-nav-links">
+          <div class="admin-nav-item" data-tab="submissions"><span class="nav-icon">📬</span> Guest Submissions</div>
+          <div class="admin-nav-item" data-tab="newsletter"><span class="nav-icon">📧</span> Newsletter Emails</div>
+        </nav>
+      </div>
+
+      <div style="margin-top: auto;">
+        <a href="index.html" class="admin-nav-item" style="text-decoration:none;"><span class="nav-icon">🌐</span> View Public Site</a>
+        <div class="admin-nav-item" id="admin-logout-btn" style="color:#e06c75; margin-top:4px;"><span class="nav-icon">🚪</span> Log Out</div>
+      </div>
+    </aside>
+
+    <!-- ══════════════════ MAIN CONTENT ══════════════════ -->
+    <main class="admin-content-area" aria-label="Admin Dashboard Panel">
+
+      <!-- Top Header Bar -->
+      <div class="admin-header">
+        <div class="admin-header-left">
+          <h2 id="admin-page-title">Dashboard Overview</h2>
+          <span>Logged in as: <strong>aijazmajeed804@gmail.com</strong> &nbsp;·&nbsp; Owner</span>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <span style="font-size:12px; color:var(--color-body-light);" id="admin-current-time"></span>
+          <a href="index.html" class="btn" style="width:auto; padding:9px 20px; font-size:13px;">🌐 View Site</a>
+        </div>
+      </div>
+
+      <!-- ▌ TAB 1: OVERVIEW ▐ -->
+      <div class="admin-tab-content active" id="tab-overview">
+        <div class="admin-stats-grid">
+          <div class="admin-stat-card">
+            <div class="stat-icon">📰</div>
+            <div class="admin-stat-num" id="stat-articles">0</div>
+            <div class="stat-label">Total Articles</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="stat-icon">📬</div>
+            <div class="admin-stat-num" id="stat-submissions">0</div>
+            <div class="stat-label">Pending Submissions</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="stat-icon">📧</div>
+            <div class="admin-stat-num" id="stat-subscribers">24</div>
+            <div class="stat-label">Subscribers</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="stat-icon">👁️</div>
+            <div class="admin-stat-num" id="stat-views">1,482</div>
+            <div class="stat-label">Mock Page Views</div>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="admin-table">
+            <thead><tr><th>Event</th><th>Details</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>System Boot</td>
+                <td>Home Inserts Static Engine Running</td>
+                <td><span class="status-badge status-active">ACTIVE</span></td>
+              </tr>
+              <tr>
+                <td>Database Sync</td>
+                <td>Loaded articles list from posts.json + localStorage</td>
+                <td><span class="status-badge status-active">SYNCED</span></td>
+              </tr>
+              <tr>
+                <td>Admin Session</td>
+                <td>Owner authenticated via sessionStorage</td>
+                <td><span class="status-badge status-active">SECURE</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ▌ TAB 2: MANAGE ARTICLES ▐ -->
+      <div class="admin-tab-content" id="tab-articles">
+        <div class="tab-section-title">All Published Articles</div>
+        <div class="tab-section-sub">Click <strong>Edit</strong> to modify an article, or <strong>Delete</strong> to remove it from the public site.</div>
+        <div class="table-wrapper">
+          <table class="admin-table" id="admin-articles-table">
+            <thead>
+              <tr>
+                <th style="width:38%;">Title</th>
+                <th>Category</th>
+                <th>Author</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-articles-list">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ▌ TAB 3: PUBLISH / EDIT ARTICLE ▐ -->
+      <div class="admin-tab-content" id="tab-create">
+        <!-- Edit mode notice banner -->
+        <div class="edit-mode-banner" id="edit-mode-banner" role="alert">
+          ✏️ &nbsp;<span>You are editing: <strong id="edit-mode-article-title">—</strong></span>
+          <button class="cancel-edit-btn" id="cancel-edit-btn">✕ Cancel Edit</button>
+        </div>
+
+        <div class="tab-section-title" id="create-tab-title">Publish New Article</div>
+        <div class="tab-section-sub" id="create-tab-sub">Fill in all fields below, including the SEO section, then click Publish.</div>
+
+        <form id="admin-publish-form">
+          <!-- Hidden edit state -->
+          <input type="hidden" id="admin-edit-id" value="">
+          <input type="hidden" id="admin-edit-source" value=""><!-- 'user' or 'json' -->
+
+          <!-- ── CONTENT SECTION ── -->
+          <div class="form-card" style="margin-bottom: 22px;">
+            <div class="form-section-header"><span class="section-icon">📝</span> Article Content</div>
+
+            <div class="form-grid-2" style="margin-bottom: 18px;">
+              <div class="form-group">
+                <label for="admin-title">Article Title <span style="color:#d93025;">*</span></label>
+                <input type="text" id="admin-title" class="form-control" required placeholder="e.g., 10 Modern Living Room Styles">
+              </div>
+              <div class="form-group">
+                <label for="admin-category">Category <span style="color:#d93025;">*</span></label>
+                <select id="admin-category" class="form-control" required>
+                  <option value="Decor &amp; Renovate">Decor &amp; Renovate</option>
+                  <option value="Kitchen">Kitchen</option>
+                  <option value="Sleep &amp; Comfort">Sleep &amp; Comfort</option>
+                  <option value="Outdoor &amp; Landscaping">Outdoor &amp; Landscaping</option>
+                  <option value="Home Improvement">Home Improvement</option>
+                  <option value="Lifestyle">Lifestyle</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 18px;">
+              <label for="admin-image">Featured Image URL <span class="optional-tag">(optional)</span></label>
+              <input type="url" id="admin-image" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 18px;">
+              <label for="admin-excerpt">Card Excerpt / Summary <span style="color:#d93025;">*</span></label>
+              <input type="text" id="admin-excerpt" class="form-control" required placeholder="A brief summary shown on post cards and search results">
+            </div>
+
+            <div class="form-group">
+              <label for="admin-content">Article Body <span style="color:#d93025;">*</span> <span class="optional-tag">(HTML allowed)</span></label>
+              <textarea id="admin-content" class="form-control" rows="12" required placeholder="<p>Write your article body here. You may use HTML tags like &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;strong&gt;, etc.</p>"></textarea>
+            </div>
+          </div>
+
+          <!-- ── SEO SECTION ── -->
+          <div class="form-card" style="margin-bottom: 22px;">
+            <div class="form-section-header"><span class="section-icon">🔍</span> SEO &amp; Meta Settings</div>
+            <p style="font-size:13px; color:var(--color-body-light); margin-bottom:20px; margin-top:-4px;">
+              These fields control how the article appears in Google search results and on social media. Fill them carefully for best visibility.
+            </p>
+
+            <div class="form-group" style="margin-bottom: 18px;">
+              <label for="admin-seo-title">SEO Meta Title <span class="optional-tag">(recommended: 50–60 chars)</span></label>
+              <input type="text" id="admin-seo-title" class="form-control" placeholder="Leave blank to auto-use article title" maxlength="80">
+              <div class="char-count" id="seo-title-count">0 / 60</div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 18px;">
+              <label for="admin-seo-description">Meta Description <span class="optional-tag">(recommended: 140–160 chars)</span></label>
+              <textarea id="admin-seo-description" class="form-control" rows="3" placeholder="Compelling summary for search engines. Leave blank to auto-use the excerpt." maxlength="200"></textarea>
+              <div class="char-count" id="seo-desc-count">0 / 160</div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 18px;">
+              <label for="admin-seo-keywords">Focus Keywords <span class="optional-tag">(comma-separated)</span></label>
+              <input type="text" id="admin-seo-keywords" class="form-control" placeholder="e.g., living room ideas, home decor, interior design 2025">
+            </div>
+
+            <div class="form-grid-2" style="margin-bottom: 18px;">
+              <div class="form-group">
+                <label for="admin-seo-canonical">Canonical URL <span class="optional-tag">(optional)</span></label>
+                <input type="url" id="admin-seo-canonical" class="form-control" placeholder="https://yourdomain.com/post-slug">
+              </div>
+              <div class="form-group">
+                <label for="admin-og-image">OG / Social Share Image URL <span class="optional-tag">(optional)</span></label>
+                <input type="url" id="admin-og-image" class="form-control" placeholder="Defaults to featured image if blank">
+              </div>
+            </div>
+
+            <!-- Live Google Preview -->
+            <div class="seo-preview">
+              <div class="seo-preview-title">🔎 Google SERP Preview</div>
+              <div class="seo-preview-inner">
+                <div class="seo-preview-url" id="seo-prev-url">homeinserts.com › articles › your-article-slug</div>
+                <div class="seo-preview-heading" id="seo-prev-title">Your Article Title Will Appear Here</div>
+                <div class="seo-preview-desc" id="seo-prev-desc">Your meta description will appear here. Make it compelling to improve click-through rates from search engines.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── SUBMIT BUTTON ── -->
+          <div style="display:flex; align-items:center; gap:16px;">
+            <button type="submit" id="form-submit-btn" class="btn" style="width:auto; padding:13px 44px; font-size:15px;">
+              🚀 Publish Immediately
+            </button>
+            <span id="form-status-msg" style="font-size:13px; color:var(--color-body-light);"></span>
+          </div>
+        </form>
+      </div>
+
+      <!-- ▌ TAB 4: GUEST SUBMISSIONS ▐ -->
+      <div class="admin-tab-content" id="tab-submissions">
+        <div class="tab-section-title">Guest Submissions</div>
+        <div class="tab-section-sub">Review and approve or reject articles submitted by guest writers.</div>
+        <div class="table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Title</th><th>Author</th><th>Category</th>
+                <th>Excerpt</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-submissions-list"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ▌ TAB 5: NEWSLETTER ▐ -->
+      <div class="admin-tab-content" id="tab-newsletter">
+        <div class="tab-section-title">Newsletter Subscribers</div>
+        <div class="tab-section-sub">All emails that have subscribed to the Home Inserts newsletter.</div>
+        <div class="table-wrapper">
+          <table class="admin-table">
+            <thead><tr><th>Email Address</th><th>Date Joined</th><th>Status</th></tr></thead>
+            <tbody id="admin-newsletter-list"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div><!-- /.admin-layout-wrapper -->
+
+  <script src="js/app.js"></script>
+  <script>
+    /* ════════════════════════════════════════════════
+       ADMIN DASHBOARD ENGINE
+    ════════════════════════════════════════════════ */
+
+    // ── Live Clock ────────────────────────────────
+    function updateClock() {
+      const el = document.getElementById('admin-current-time');
+      if (el) el.textContent = new Date().toLocaleString('en-US', { hour:'2-digit', minute:'2-digit', month:'short', day:'numeric', year:'numeric' });
+    }
+    updateClock();
+    setInterval(updateClock, 60000);
+
+    // ── Tab Switching ─────────────────────────────
+    const pageTitles = {
+      overview: 'Dashboard Overview',
+      articles: 'Manage Articles',
+      create: 'Publish / Edit Article',
+      submissions: 'Guest Submissions',
+      newsletter: 'Newsletter Subscribers'
+    };
+
+    const navItems = document.querySelectorAll('.admin-nav-item[data-tab]');
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        navItems.forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+
+        const target = item.getAttribute('data-tab');
+        document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(`tab-${target}`).classList.add('active');
+        document.getElementById('admin-page-title').textContent = pageTitles[target] || 'Admin';
+
+        if (target === 'articles') renderAdminArticles();
+        if (target === 'submissions') renderAdminSubmissions();
+        if (target === 'newsletter') renderAdminNewsletter();
+        if (target !== 'create') exitEditMode();
+      });
+    });
+
+    // ── Logout ────────────────────────────────────
+    document.getElementById('admin-logout-btn').addEventListener('click', () => {
+      sessionStorage.removeItem('home_inserts_admin_logged_in');
+      showToast('Logged out successfully.', 'success');
+      setTimeout(() => window.location.href = 'index.html', 1000);
+    });
+
+    // ── Stats ─────────────────────────────────────
+    function updateStats() {
+      setTimeout(() => {
+        document.getElementById('stat-articles').textContent = state.posts.length;
+        const subs = JSON.parse(localStorage.getItem('home_inserts_guest_submissions') || '[]');
+        document.getElementById('stat-submissions').textContent = subs.length;
+      }, 500);
+    }
+    updateStats();
+
+    /* ════════════════════════════════════════════════
+       ARTICLES TABLE
+    ════════════════════════════════════════════════ */
+    function renderAdminArticles() {
+      const tbody = document.getElementById('admin-articles-list');
+      tbody.innerHTML = '';
+
+      if (!state.posts.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--color-body-light); padding:30px;">No articles found.</td></tr>';
+        return;
+      }
+
+      state.posts.forEach(post => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong style="font-size:14px;">${post.title}</strong></td>
+          <td><span style="font-size:12px; padding:3px 8px; background:#f0f4ff; color:#1967d2; border-radius:100px; font-weight:600;">${post.category}</span></td>
+          <td style="font-size:13px;">${post.author}</td>
+          <td style="font-size:13px; color:var(--color-body-light);">${post.date}</td>
+          <td>
+            <button class="action-btn btn-edit" onclick="editArticle(${post.id})">✏️ Edit</button>
+            <button class="action-btn btn-delete" onclick="deleteArticle(${post.id})">🗑️ Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* ════════════════════════════════════════════════
+       EDIT ARTICLE
+    ════════════════════════════════════════════════ */
+    window.editArticle = function(id) {
+      const post = state.posts.find(p => p.id === id);
+      if (!post) { showToast('Article not found.', 'error'); return; }
+
+      // Switch to Create/Edit tab
+      navItems.forEach(n => n.classList.remove('active'));
+      document.querySelector('.admin-nav-item[data-tab="create"]').classList.add('active');
+      document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById('tab-create').classList.add('active');
+      document.getElementById('admin-page-title').textContent = 'Edit Article';
+
+      // Mark edit mode
+      document.getElementById('admin-edit-id').value = post.id;
+
+      // Determine source: user-submitted or seeded json
+      const userPosts = JSON.parse(localStorage.getItem('home_inserts_user_posts') || '[]');
+      const isUserPost = userPosts.some(p => p.id === post.id);
+      document.getElementById('admin-edit-source').value = isUserPost ? 'user' : 'json';
+
+      // Populate content fields
+      document.getElementById('admin-title').value = post.title || '';
+      document.getElementById('admin-category').value = post.category || 'Lifestyle';
+      document.getElementById('admin-image').value = post.image || '';
+      document.getElementById('admin-excerpt').value = post.excerpt || '';
+      document.getElementById('admin-content').value = post.content || '';
+
+      // Populate SEO fields
+      document.getElementById('admin-seo-title').value = post.seoTitle || '';
+      document.getElementById('admin-seo-description').value = post.seoDescription || '';
+      document.getElementById('admin-seo-keywords').value = (post.seoKeywords || []).join(', ');
+      document.getElementById('admin-seo-canonical').value = post.canonical || '';
+      document.getElementById('admin-og-image').value = post.ogImage || '';
+
+      // Update char counts & preview
+      updateSeoCharCounts();
+      updateSeoPreview();
+
+      // Show edit banner
+      document.getElementById('edit-mode-article-title').textContent = post.title;
+      document.getElementById('edit-mode-banner').classList.add('visible');
+
+      // Change form UI
+      document.getElementById('create-tab-title').textContent = 'Edit Article';
+      document.getElementById('create-tab-sub').textContent = 'Make your changes and click Update Article to save.';
+      const btn = document.getElementById('form-submit-btn');
+      btn.textContent = '💾 Update Article';
+      btn.classList.add('update-mode');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    function exitEditMode() {
+      document.getElementById('admin-edit-id').value = '';
+      document.getElementById('admin-edit-source').value = '';
+      document.getElementById('admin-publish-form').reset();
+      document.getElementById('edit-mode-banner').classList.remove('visible');
+      document.getElementById('create-tab-title').textContent = 'Publish New Article';
+      document.getElementById('create-tab-sub').textContent = 'Fill in all fields below, including the SEO section, then click Publish.';
+      const btn = document.getElementById('form-submit-btn');
+      btn.textContent = '🚀 Publish Immediately';
+      btn.classList.remove('update-mode');
+      updateSeoCharCounts();
+      updateSeoPreview();
+    }
+
+    document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+      exitEditMode();
+      // Go back to articles tab
+      navItems.forEach(n => n.classList.remove('active'));
+      document.querySelector('.admin-nav-item[data-tab="articles"]').classList.add('active');
+      document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById('tab-articles').classList.add('active');
+      document.getElementById('admin-page-title').textContent = pageTitles['articles'];
+      renderAdminArticles();
+    });
+
+    /* ════════════════════════════════════════════════
+       DELETE ARTICLE
+    ════════════════════════════════════════════════ */
+    window.deleteArticle = function(id) {
+      if (!confirm('Are you sure you want to delete this article? This cannot be undone.')) return;
+
+      const userPostsStr = localStorage.getItem('home_inserts_user_posts');
+      let userPosts = userPostsStr ? JSON.parse(userPostsStr) : [];
+      const index = userPosts.findIndex(p => p.id === id);
+
+      if (index > -1) {
+        userPosts.splice(index, 1);
+        localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
+      } else {
+        const blockedStr = localStorage.getItem('home_inserts_blocked_posts') || '[]';
+        const blocked = JSON.parse(blockedStr);
+        blocked.push(id);
+        localStorage.setItem('home_inserts_blocked_posts', JSON.stringify(blocked));
+      }
+
+      showToast('Article deleted successfully.', 'success');
+      loadPosts().then(() => { renderAdminArticles(); updateStats(); });
+    };
+
+    /* ════════════════════════════════════════════════
+       PUBLISH / UPDATE FORM
+    ════════════════════════════════════════════════ */
+    document.getElementById('admin-publish-form').addEventListener('submit', e => {
+      e.preventDefault();
+
+      const editId   = document.getElementById('admin-edit-id').value;
+      const editSrc  = document.getElementById('admin-edit-source').value;
+      const title    = document.getElementById('admin-title').value.trim();
+      const category = document.getElementById('admin-category').value;
+      const image    = document.getElementById('admin-image').value.trim() || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=800';
+      const excerpt  = document.getElementById('admin-excerpt').value.trim();
+      const content  = document.getElementById('admin-content').value.trim();
+
+      // SEO fields
+      const seoTitle        = document.getElementById('admin-seo-title').value.trim();
+      const seoDescription  = document.getElementById('admin-seo-description').value.trim();
+      const seoKeywordsRaw  = document.getElementById('admin-seo-keywords').value.trim();
+      const seoKeywords     = seoKeywordsRaw ? seoKeywordsRaw.split(',').map(k => k.trim()).filter(Boolean) : [];
+      const canonical       = document.getElementById('admin-seo-canonical').value.trim();
+      const ogImage         = document.getElementById('admin-og-image').value.trim();
+
+      const slug = title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+
+      const postData = {
+        title, slug, category,
+        tags: ["Editor's Choice", category],
+        date: new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }),
+        author: 'Administrator',
+        readTime: `${Math.max(2, Math.ceil(content.split(' ').length / 200))} min read`,
+        image, excerpt, content,
+        // SEO
+        seoTitle:       seoTitle || title,
+        seoDescription: seoDescription || excerpt,
+        seoKeywords,
+        canonical,
+        ogImage:        ogImage || image
+      };
+
+      let userPosts = JSON.parse(localStorage.getItem('home_inserts_user_posts') || '[]');
+
+      if (editId) {
+        // ── UPDATE EXISTING ──
+        const numId = parseInt(editId);
+        postData.id = numId;
+
+        if (editSrc === 'user') {
+          const idx = userPosts.findIndex(p => p.id === numId);
+          if (idx > -1) userPosts[idx] = postData;
+          else userPosts.unshift(postData);
+        } else {
+          // For seeded JSON posts: block the old one and save the edited version as a new user post
+          const blockedStr = localStorage.getItem('home_inserts_blocked_posts') || '[]';
+          const blocked = JSON.parse(blockedStr);
+          if (!blocked.includes(numId)) { blocked.push(numId); }
+          localStorage.setItem('home_inserts_blocked_posts', JSON.stringify(blocked));
+          postData.id = Date.now(); // new unique ID
+          userPosts.unshift(postData);
+        }
+
+        localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
+        showToast('Article updated successfully!', 'success');
+      } else {
+        // ── CREATE NEW ──
+        postData.id = Date.now();
+        userPosts.unshift(postData);
+        localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
+        showToast('Article published successfully!', 'success');
+      }
+
+      exitEditMode();
+      document.getElementById('form-status-msg').textContent = '';
+      loadPosts().then(() => updateStats());
+    });
+
+    /* ════════════════════════════════════════════════
+       SEO CHAR COUNT & LIVE PREVIEW
+    ════════════════════════════════════════════════ */
+    function updateSeoCharCounts() {
+      const titleEl = document.getElementById('admin-seo-title');
+      const descEl  = document.getElementById('admin-seo-description');
+      const tCount  = document.getElementById('seo-title-count');
+      const dCount  = document.getElementById('seo-desc-count');
+
+      const tLen = titleEl.value.length;
+      tCount.textContent = `${tLen} / 60`;
+      tCount.className = 'char-count' + (tLen > 60 ? ' over' : tLen > 50 ? ' warning' : '');
+
+      const dLen = descEl.value.length;
+      dCount.textContent = `${dLen} / 160`;
+      dCount.className = 'char-count' + (dLen > 160 ? ' over' : dLen > 140 ? ' warning' : '');
+    }
+
+    function updateSeoPreview() {
+      const title   = document.getElementById('admin-seo-title').value.trim()
+                      || document.getElementById('admin-title').value.trim()
+                      || 'Your Article Title Will Appear Here';
+      const desc    = document.getElementById('admin-seo-description').value.trim()
+                      || document.getElementById('admin-excerpt').value.trim()
+                      || 'Your meta description will appear here. Make it compelling to improve click-through rates from search engines.';
+      const rawTitle = document.getElementById('admin-title').value.trim();
+      const slugPreview = rawTitle
+        ? rawTitle.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-')
+        : 'your-article-slug';
+
+      document.getElementById('seo-prev-title').textContent = title.length > 60 ? title.slice(0, 57) + '...' : title;
+      document.getElementById('seo-prev-desc').textContent  = desc.length > 160 ? desc.slice(0, 157) + '...' : desc;
+      document.getElementById('seo-prev-url').textContent   = `homeinserts.com › articles › ${slugPreview}`;
+    }
+
+    // Attach events for live updates
+    ['admin-title','admin-excerpt','admin-seo-title','admin-seo-description'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.addEventListener('input', () => { updateSeoCharCounts(); updateSeoPreview(); }); }
+    });
+    updateSeoCharCounts();
+    updateSeoPreview();
+
+    /* ════════════════════════════════════════════════
+       GUEST SUBMISSIONS
+    ════════════════════════════════════════════════ */
+    function renderAdminSubmissions() {
+      const tbody = document.getElementById('admin-submissions-list');
+      tbody.innerHTML = '';
+      const submissions = JSON.parse(localStorage.getItem('home_inserts_guest_submissions') || '[]');
+
+      if (!submissions.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--color-body-light); padding:30px;">No guest submissions awaiting review.</td></tr>';
+        return;
+      }
+
+      submissions.forEach((sub, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${sub.title}</strong></td>
+          <td>${sub.author}</td>
+          <td>${sub.category}</td>
+          <td style="font-size:12px; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${sub.excerpt}</td>
+          <td>
+            <button class="action-btn btn-approve" onclick="approveSubmission(${idx})">✅ Approve</button>
+            <button class="action-btn btn-delete" onclick="rejectSubmission(${idx})">❌ Reject</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.approveSubmission = function(index) {
+      const submissions = JSON.parse(localStorage.getItem('home_inserts_guest_submissions') || '[]');
+      const approved = submissions.splice(index, 1)[0];
+      localStorage.setItem('home_inserts_guest_submissions', JSON.stringify(submissions));
+
+      const userPosts = JSON.parse(localStorage.getItem('home_inserts_user_posts') || '[]');
+      approved.id = Date.now();
+      approved.date = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+      userPosts.unshift(approved);
+      localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
+
+      showToast('Guest post approved and published!', 'success');
+      loadPosts().then(() => { renderAdminSubmissions(); updateStats(); });
+    };
+
+    window.rejectSubmission = function(index) {
+      if (!confirm('Reject and delete this submission?')) return;
+      const submissions = JSON.parse(localStorage.getItem('home_inserts_guest_submissions') || '[]');
+      submissions.splice(index, 1);
+      localStorage.setItem('home_inserts_guest_submissions', JSON.stringify(submissions));
+      showToast('Submission rejected.', 'success');
+      renderAdminSubmissions();
+      updateStats();
+    };
+
+    /* ════════════════════════════════════════════════
+       NEWSLETTER
+    ════════════════════════════════════════════════ */
+    function renderAdminNewsletter() {
+      const tbody = document.getElementById('admin-newsletter-list');
+      tbody.innerHTML = '';
+      const stored = JSON.parse(localStorage.getItem('home_inserts_newsletter') || '[]');
+      const mock = [
+        { email: 'builder.pro@gmail.com', date: 'June 4, 2026' },
+        { email: 'decor.ideas@outlook.com', date: 'June 2, 2026' },
+        { email: 'guestwriter8@seoagency.net', date: 'May 30, 2026' }
+      ];
+      const all = [...stored, ...mock];
+
+      all.forEach(sub => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${sub.email}</td>
+          <td style="color:var(--color-body-light); font-size:13px;">${sub.date || 'Unknown'}</td>
+          <td><span class="status-badge status-active">ACTIVE</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+</html>
