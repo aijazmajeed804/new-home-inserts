@@ -4,7 +4,7 @@ A modern, full-featured static blog website for home decor, renovation, and life
 
 ## 🌐 Live Site
 
-> **[👉 View Live on GitHub Pages](https://aijazlatif.github.io/new-home-inserts/)**
+> **[👉 View Live on GitHub Pages](https://aijazmajeed804.github.io/new-home-inserts/)**
 
 ---
 
