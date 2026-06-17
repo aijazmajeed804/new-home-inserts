@@ -15,6 +15,7 @@ const state = {
 
 // Initialize Application
 document.addEventListener('DOMContentLoaded', async () => {
+  seedUsers();
   setupActiveNavMenu();
   await loadPosts();
   initRouter();
@@ -86,16 +87,20 @@ function initRouter() {
     setupContactForm();
   } else if (page === 'submit-guest') {
     setupGuestPostForm();
+  } else if (page === 'author') {
+    renderAuthor();
   }
 }
 
 // Set up Sidebar Widgets (Recent Posts, Categories list)
 function setupSidebarWidgets() {
+  const publishedPosts = state.posts.filter(p => !p.status || p.status === 'Published');
+
   // 1. Render Recent Posts in Sidebar (top 5 posts)
   const recentList = document.getElementById('recent-posts-list');
   if (recentList) {
     recentList.innerHTML = '';
-    const recentPosts = state.posts.slice(0, 5);
+    const recentPosts = publishedPosts.slice(0, 5);
     recentPosts.forEach(post => {
       const item = document.createElement('div');
       item.className = 'widget-post-item';
@@ -119,7 +124,7 @@ function setupSidebarWidgets() {
     const counts = {};
     
     // Count posts in each category
-    state.posts.forEach(post => {
+    publishedPosts.forEach(post => {
       counts[post.category] = (counts[post.category] || 0) + 1;
     });
 
@@ -166,6 +171,10 @@ function renderHome() {
 // Filter posts according to active category and search input
 function filterAndSearch() {
   state.filteredPosts = state.posts.filter(post => {
+    // Check status
+    const isPublished = !post.status || post.status === 'Published';
+    if (!isPublished) return false;
+
     // Category match
     const categoryMatch = state.activeCategory === 'All' || post.category === state.activeCategory;
     
@@ -292,6 +301,18 @@ function renderPostDetail() {
     return;
   }
 
+  // Verify access for non-published posts
+  const isPublished = !post.status || post.status === 'Published';
+  if (!isPublished) {
+    const currentUser = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
+    const isAuthor = currentUser && (currentUser.username === post.authorId || currentUser.name === post.author);
+    const isAdminOrEditor = currentUser && ['Super Admin', 'Admin', 'Editor'].includes(currentUser.role);
+    if (!isAuthor && !isAdminOrEditor) {
+      showPostNotFound();
+      return;
+    }
+  }
+
   // Set page SEO metadata, OG tags, Canonical, and Schema
   updatePageSEOMeta(post);
 
@@ -308,7 +329,12 @@ function renderPostDetail() {
   // Populate Header elements
   document.getElementById('post-category-badge').textContent = post.category;
   document.getElementById('post-main-title').textContent = post.title;
-  document.getElementById('post-author').textContent = post.author;
+  
+  // Link author to author profile page
+  const authorEl = document.getElementById('post-author');
+  const authorSlug = (post.authorId || post.author || 'administrator').toLowerCase().replace(/\s+/g, '-');
+  authorEl.innerHTML = `<a href="author.html?id=${authorSlug}" style="color:inherit; text-decoration:none; font-weight:700;">${post.author}</a>`;
+  
   document.getElementById('post-date').textContent = post.date;
   document.getElementById('post-read-time').textContent = post.readTime;
   
@@ -319,6 +345,9 @@ function renderPostDetail() {
 
   // Article Content
   document.getElementById('post-body-content').innerHTML = post.content;
+
+  // Append Author Bio Card
+  renderPostAuthorCard(post);
 
   // Render Tags
   const tagsContainer = document.getElementById('post-tags-container');
@@ -963,4 +992,296 @@ function getFallbackPosts() {
 ]
 ;
 }
+
+/* ════════════════════════════════════════════════
+   MULTI-AUTHOR DATABASE SEED & RENDER ENGINE
+════════════════════════════════════════════════ */
+
+function seedUsers() {
+  if (!localStorage.getItem('home_inserts_users')) {
+    const defaultUsers = [
+      {
+        id: 'admin-1',
+        name: 'Aijaz Majeed',
+        username: 'aijaz-majeed',
+        email: 'aijazmajeed804@gmail.com',
+        password: 'aijazmajeed@@1243',
+        role: 'Super Admin',
+        bio: 'Founder & chief editor at Home Inserts. Passionate about home decor, renovations, and comfort styling.',
+        image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+        socials: {
+          facebook: 'https://facebook.com',
+          twitter: 'https://twitter.com',
+          linkedin: 'https://linkedin.com'
+        },
+        status: 'Active'
+      },
+      {
+        id: 'admin-2',
+        name: 'Admin User',
+        username: 'admin-user',
+        email: 'admin@homeinserts.com',
+        password: 'adminpassword',
+        role: 'Admin',
+        bio: 'System Administrator managing authors, reviews, and categories.',
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+        socials: {
+          facebook: 'https://facebook.com',
+          twitter: 'https://twitter.com'
+        },
+        status: 'Active'
+      },
+      {
+        id: 'editor-1',
+        name: 'Dr. Sarah Jenkins',
+        username: 'sarah-jenkins',
+        email: 'sarah.jenkins@homeinserts.com',
+        password: 'sarahpassword',
+        role: 'Editor',
+        bio: 'Dr. Sarah Jenkins is a sleep psychologist and home comfort specialist helping families design relaxing bedrooms.',
+        image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200',
+        socials: {
+          linkedin: 'https://linkedin.com'
+        },
+        status: 'Active'
+      },
+      {
+        id: 'author-1',
+        name: 'Marcus Thorne',
+        username: 'marcus-thorne',
+        email: 'marcus.thorne@homeinserts.com',
+        password: 'marcuspassword',
+        role: 'Author',
+        bio: 'Landscape designer and turf care expert focusing on outdoor living spaces and beautiful gardens in North Carolina.',
+        image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=200',
+        socials: {
+          facebook: 'https://facebook.com',
+          twitter: 'https://twitter.com'
+        },
+        status: 'Active'
+      },
+      {
+        id: 'author-2',
+        name: 'Jane Jenkins',
+        username: 'jane-jenkins',
+        email: 'jane.jenkins@homeinserts.com',
+        password: 'janepassword',
+        role: 'Author',
+        bio: 'Interior designer specializing in space-saving hacks and mid-century modern living room styles.',
+        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200',
+        socials: {
+          instagram: 'https://instagram.com'
+        },
+        status: 'Active'
+      },
+      {
+        id: 'author-3',
+        name: 'Farhan Ellahi',
+        username: 'farhan-ellahi',
+        email: 'farhan@homeinserts.com',
+        password: 'farhanpassword',
+        role: 'Author',
+        bio: 'Home improvement specialist with extensive expertise in bathroom layouts, furnishings, and flooring products.',
+        image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
+        socials: {
+          facebook: 'https://facebook.com',
+          twitter: 'https://twitter.com'
+        },
+        status: 'Active'
+      },
+      {
+        id: 'author-4',
+        name: 'Aijaz Ahmad',
+        username: 'aijaz-ahmad',
+        email: 'aijaz@homeinserts.com',
+        password: 'aijazpassword',
+        role: 'Author',
+        bio: 'Professional plumber and DIY guide contributor. Specialist in kitchen and bathroom fixture installations.',
+        image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200',
+        socials: {
+          linkedin: 'https://linkedin.com'
+        },
+        status: 'Active'
+      }
+    ];
+    localStorage.setItem('home_inserts_users', JSON.stringify(defaultUsers));
+  }
+}
+
+function renderPostAuthorCard(post) {
+  const container = document.getElementById('post-body-content');
+  if (!container) return;
+
+  const users = JSON.parse(localStorage.getItem('home_inserts_users') || '[]');
+  
+  let author = null;
+  if (post.authorId) {
+    author = users.find(u => u.username === post.authorId);
+  }
+  if (!author && post.author) {
+    author = users.find(u => u.name.toLowerCase() === post.author.toLowerCase());
+  }
+
+  if (!author) {
+    author = {
+      name: post.author || 'Home Inserts Writer',
+      username: (post.author || 'writer').toLowerCase().replace(/\s+/g, '-'),
+      role: 'Guest Author',
+      bio: 'Regular contributor sharing insights on home improvements, renovations, and comfort styling.',
+      image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200',
+      socials: {}
+    };
+  }
+
+  const cardDiv = document.createElement('div');
+  cardDiv.className = 'author-bio-card';
+  
+  let socialLinksHTML = '';
+  if (author.socials) {
+    if (author.socials.facebook) socialLinksHTML += `<a href="${author.socials.facebook}" target="_blank">Facebook</a>`;
+    if (author.socials.twitter) socialLinksHTML += `<a href="${author.socials.twitter}" target="_blank">Twitter</a>`;
+    if (author.socials.linkedin) socialLinksHTML += `<a href="${author.socials.linkedin}" target="_blank">LinkedIn</a>`;
+    if (author.socials.instagram) socialLinksHTML += `<a href="${author.socials.instagram}" target="_blank">Instagram</a>`;
+  }
+
+  cardDiv.innerHTML = `
+    <img class="author-bio-avatar" src="${author.image || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200'}" alt="${author.name}">
+    <div class="author-bio-info">
+      <div class="author-bio-header">
+        <h4><a href="author.html?id=${author.username}">${author.name}</a></h4>
+        <span class="role-badge ${author.role.toLowerCase().replace(/\s+/g, '-')}">${author.role}</span>
+      </div>
+      <p class="author-bio-text">${author.bio || 'Professional writer and home enthusiast.'}</p>
+      ${socialLinksHTML ? `<div class="author-bio-socials">${socialLinksHTML}</div>` : ''}
+    </div>
+  `;
+
+  container.appendChild(cardDiv);
+}
+
+function renderAuthor() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const authorId = urlParams.get('id');
+  if (!authorId) {
+    redirectToHome();
+    return;
+  }
+
+  const users = JSON.parse(localStorage.getItem('home_inserts_users') || '[]');
+  let author = users.find(u => u.username === authorId);
+
+  if (!author) {
+    const cleanName = authorId.replace(/-/g, ' ');
+    author = users.find(u => u.name.toLowerCase() === cleanName.toLowerCase());
+  }
+
+  if (!author) {
+    author = {
+      name: authorId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+      username: authorId,
+      role: 'Guest Author',
+      bio: 'Contributor sharing professional perspectives on home improvement, lifestyle, and decor.',
+      image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200',
+      socials: {}
+    };
+  }
+
+  const loadingEl = document.getElementById('author-loading');
+  if (loadingEl) loadingEl.style.display = 'none';
+  
+  const cardEl = document.getElementById('author-profile-card');
+  if (cardEl) cardEl.style.display = 'block';
+
+  const imgEl = document.getElementById('author-img');
+  if (imgEl) {
+    imgEl.src = author.image || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200';
+    imgEl.alt = author.name;
+  }
+
+  const nameEl = document.getElementById('author-name');
+  if (nameEl) nameEl.textContent = author.name;
+  
+  const roleEl = document.getElementById('author-role');
+  if (roleEl) {
+    roleEl.textContent = author.role;
+    roleEl.className = `author-profile-role role-badge ${author.role.toLowerCase().replace(/\s+/g, '-')}`;
+  }
+  
+  const bioEl = document.getElementById('author-bio');
+  if (bioEl) bioEl.textContent = author.bio || 'Contributor sharing home improvement ideas.';
+
+  const socialsContainer = document.getElementById('author-socials');
+  if (socialsContainer) {
+    socialsContainer.innerHTML = '';
+    if (author.socials) {
+      Object.entries(author.socials).forEach(([platform, url]) => {
+        if (url) {
+          const link = document.createElement('a');
+          link.href = url;
+          link.target = '_blank';
+          link.className = 'social-icon';
+          link.textContent = platform.charAt(0).toUpperCase();
+          link.setAttribute('aria-label', platform);
+          socialsContainer.appendChild(link);
+        }
+      });
+    }
+  }
+
+  // Load articles written by this author (only Published ones)
+  const authorPosts = state.posts.filter(p => {
+    const isPublished = !p.status || p.status === 'Published';
+    const matchesAuthor = p.authorId === author.username || p.author.toLowerCase() === author.name.toLowerCase();
+    return isPublished && matchesAuthor;
+  });
+
+  const headingEl = document.getElementById('author-articles-heading');
+  if (headingEl) headingEl.textContent = `Articles by ${author.name} (${authorPosts.length})`;
+
+  renderAuthorArticlesGrid(authorPosts);
+}
+
+function renderAuthorArticlesGrid(authorPosts) {
+  const grid = document.getElementById('articles-grid');
+  if (!grid) return;
+
+  grid.innerHTML = '';
+  const total = authorPosts.length;
+  
+  if (total === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+        <svg style="color:var(--color-body-light); margin-bottom:16px;" width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <h3 style="margin-bottom:8px; color:var(--color-heading);">No Articles Published</h3>
+        <p style="color:var(--color-body-light);">This author has not published any articles yet.</p>
+      </div>
+    `;
+    return;
+  }
+
+  authorPosts.forEach(post => {
+    const card = document.createElement('article');
+    card.className = 'entry-card';
+    card.innerHTML = `
+      <div class="card-media">
+        <a href="post.html?slug=${post.slug}">
+          <img src="${post.image}" alt="${post.title}" loading="lazy">
+        </a>
+      </div>
+      <div class="card-body">
+        <span class="card-category">${post.category}</span>
+        <h3 class="card-title">
+          <a href="post.html?slug=${post.slug}">${post.title}</a>
+        </h3>
+        <p class="card-excerpt">${post.excerpt}</p>
+        <div class="card-meta">
+          <span class="meta-author">${post.author}</span>
+          <span class="meta-date">${post.date}</span>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
 

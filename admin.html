@@ -273,9 +273,21 @@
 
   <!-- Access Control Check -->
   <script>
-    if (sessionStorage.getItem('home_inserts_admin_logged_in') !== 'true') {
-      window.location.href = 'login.html';
-    }
+    (function() {
+      const loggedUser = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
+      if (sessionStorage.getItem('home_inserts_admin_logged_in') !== 'true' || !loggedUser) {
+        window.location.href = 'login.html';
+        return;
+      }
+      // Double check suspension
+      const dbUsers = JSON.parse(localStorage.getItem('home_inserts_users') || '[]');
+      const matching = dbUsers.find(u => u.id === loggedUser.id);
+      if (matching && matching.status === 'Suspended') {
+        sessionStorage.clear();
+        alert('Your account has been suspended.');
+        window.location.href = 'login.html';
+      }
+    })();
   </script>
 
   <div class="admin-layout-wrapper">
@@ -291,16 +303,18 @@
         <div class="admin-nav-section" style="margin-bottom:8px;">Main</div>
         <nav class="admin-nav-links" aria-label="Admin Tab Control">
           <div class="admin-nav-item active" data-tab="overview"><span class="nav-icon">📊</span> Dashboard</div>
-          <div class="admin-nav-item" data-tab="articles"><span class="nav-icon">📰</span> Manage Articles</div>
-          <div class="admin-nav-item" data-tab="create"><span class="nav-icon">✏️</span> Publish Article</div>
+          <div class="admin-nav-item" data-tab="articles" data-roles="Super Admin,Admin,Editor,Author"><span class="nav-icon">📰</span> Manage Articles</div>
+          <div class="admin-nav-item" data-tab="create" data-roles="Super Admin,Admin,Author"><span class="nav-icon">✏️</span> Publish Article</div>
+          <div class="admin-nav-item" data-tab="authors" data-roles="Super Admin,Admin"><span class="nav-icon">👥</span> Manage Authors</div>
         </nav>
       </div>
 
       <div>
-        <div class="admin-nav-section" style="margin-bottom:8px;">Inbox</div>
+        <div class="admin-nav-section" id="inbox-section-title" style="margin-bottom:8px;">Inbox</div>
         <nav class="admin-nav-links">
-          <div class="admin-nav-item" data-tab="submissions"><span class="nav-icon">📬</span> Guest Submissions</div>
-          <div class="admin-nav-item" data-tab="newsletter"><span class="nav-icon">📧</span> Newsletter Emails</div>
+          <div class="admin-nav-item" data-tab="submissions" data-roles="Super Admin,Admin,Editor"><span class="nav-icon">📬</span> Review Submissions</div>
+          <div class="admin-nav-item" data-tab="newsletter" data-roles="Super Admin,Admin"><span class="nav-icon">📧</span> Newsletter Emails</div>
+          <div class="admin-nav-item" data-tab="settings" data-roles="Super Admin"><span class="nav-icon">⚙️</span> Site Settings</div>
         </nav>
       </div>
 
@@ -317,7 +331,7 @@
       <div class="admin-header">
         <div class="admin-header-left">
           <h2 id="admin-page-title">Dashboard Overview</h2>
-          <span>Logged in as: <strong>aijazmajeed804@gmail.com</strong> &nbsp;·&nbsp; Owner</span>
+          <span id="admin-user-info-text">Logged in as: <strong>aijazmajeed804@gmail.com</strong> &nbsp;·&nbsp; Super Admin</span>
         </div>
         <div style="display:flex; gap:10px; align-items:center;">
           <span style="font-size:12px; color:var(--color-body-light);" id="admin-current-time"></span>
@@ -386,6 +400,7 @@
                 <th>Category</th>
                 <th>Author</th>
                 <th>Date</th>
+                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -427,9 +442,10 @@
                     <label for="admin-title">Article Title <span style="color:#d93025;">*</span></label>
                     <input type="text" id="admin-title" class="form-control" required placeholder="e.g., 5 Tips for Choosing Living Room Furniture">
                   </div>
-                  <div class="form-group">
+                  <div class="form-group" id="author-select-wrapper">
                     <label for="admin-author">Author Name <span style="color:#d93025;">*</span></label>
                     <input type="text" id="admin-author" class="form-control" required placeholder="Author Name or Brand" value="Administrator">
+                    <input type="hidden" id="admin-author-id" value="">
                   </div>
                 </div>
 
@@ -446,9 +462,16 @@
                     </select>
                   </div>
                   <div class="form-group">
-                    <label for="admin-tags">Tags <span class="optional-tag">(comma-separated)</span></label>
-                    <input type="text" id="admin-tags" class="form-control" placeholder="e.g., Furniture, Bedroom, Storage">
+                    <label for="admin-status">Publish Status <span style="color:#d93025;">*</span></label>
+                    <select id="admin-status" class="form-control" required>
+                      <!-- Populated dynamically in JS based on role -->
+                    </select>
                   </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 18px;">
+                  <label for="admin-tags">Tags <span class="optional-tag">(comma-separated)</span></label>
+                  <input type="text" id="admin-tags" class="form-control" placeholder="e.g., Furniture, Bedroom, Storage">
                 </div>
 
                 <div class="form-group" style="margin-bottom: 18px;">
@@ -787,6 +810,156 @@
         </div>
       </div>
 
+      <!-- ▌ TAB 6: MANAGE AUTHORS ▐ -->
+      <div class="admin-tab-content" id="tab-authors">
+        <div class="tab-section-title">Author Accounts Management</div>
+        <div class="tab-section-sub">Register new authors or manage existing ones. Suspend or activate accounts as needed.</div>
+        
+        <!-- Register / Edit Author Form -->
+        <div class="form-card" style="margin-bottom: 30px;" id="author-form-card">
+          <div class="form-section-header" id="author-form-header"><span class="section-icon">👤</span> Register New Author</div>
+          <form id="admin-author-form">
+            <input type="hidden" id="author-edit-id" value="">
+            <div class="form-grid-2" style="margin-bottom: 18px;">
+              <div class="form-group">
+                <label for="author-form-name">Full Name <span style="color:#d93025;">*</span></label>
+                <input type="text" id="author-form-name" class="form-control" required placeholder="e.g., John Smith">
+              </div>
+              <div class="form-group">
+                <label for="author-form-username">Username <span style="color:#d93025;">*</span> <span class="optional-tag">(used for profile URL slug)</span></label>
+                <input type="text" id="author-form-username" class="form-control" required placeholder="e.g., john-smith">
+              </div>
+            </div>
+            <div class="form-grid-2" style="margin-bottom: 18px;">
+              <div class="form-group">
+                <label for="author-form-email">Email Address <span style="color:#d93025;">*</span></label>
+                <input type="email" id="author-form-email" class="form-control" required placeholder="e.g., john@homeinserts.com">
+              </div>
+              <div class="form-group">
+                <label for="author-form-password">Password <span style="color:#d93025;">*</span></label>
+                <div class="password-wrapper">
+                  <input type="password" id="author-form-password" class="form-control" required placeholder="••••••••">
+                  <button type="button" id="toggle-author-password" class="password-toggle-btn" aria-label="Toggle Password Visibility" title="Show password">
+                    <svg class="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <svg class="eye-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="form-grid-2" style="margin-bottom: 18px;">
+              <div class="form-group">
+                <label for="author-form-role">User Role <span style="color:#d93025;">*</span></label>
+                <select id="author-form-role" class="form-control" required>
+                  <option value="Author">Author</option>
+                  <option value="Editor">Editor</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Super Admin">Super Admin</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="author-form-image">Avatar Image URL</label>
+                <input type="url" id="author-form-image" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 18px;">
+              <label for="author-form-bio">Biography / Description</label>
+              <textarea id="author-form-bio" class="form-control" rows="3" placeholder="Brief description of the author's expertise and professional background."></textarea>
+            </div>
+            <div class="form-grid-2" style="margin-bottom: 24px;">
+              <div class="form-group">
+                <label for="author-form-fb">Facebook URL <span class="optional-tag">(optional)</span></label>
+                <input type="url" id="author-form-fb" class="form-control" placeholder="https://facebook.com/username">
+              </div>
+              <div class="form-group">
+                <label for="author-form-tw">Twitter URL <span class="optional-tag">(optional)</span></label>
+                <input type="url" id="author-form-tw" class="form-control" placeholder="https://twitter.com/username">
+              </div>
+            </div>
+            <div style="display:flex; gap:12px;">
+              <button type="submit" class="btn" id="author-submit-btn" style="width:auto; padding:12px 30px;">➕ Register User</button>
+              <button type="button" class="btn btn-view" id="author-cancel-btn" style="width:auto; padding:12px 30px; display:none;">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Authors List Table -->
+        <div class="table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width:25%;">Name</th>
+                <th>Role</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-authors-list">
+              <!-- Filled dynamically in JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ▌ TAB 7: SITE SETTINGS ▐ -->
+      <div class="admin-tab-content" id="tab-settings">
+        <div class="tab-section-title">Website Settings</div>
+        <div class="tab-section-sub">Configure the main site settings, branding parameters, SEO configurations, and global options.</div>
+        
+        <div class="form-card">
+          <div class="form-section-header"><span>⚙️</span> Global Configuration</div>
+          <form id="admin-settings-form">
+            <div class="form-grid-2" style="margin-bottom: 18px;">
+              <div class="form-group">
+                <label for="settings-site-name">Website Name</label>
+                <input type="text" id="settings-site-name" class="form-control" value="Home Inserts">
+              </div>
+              <div class="form-group">
+                <label for="settings-site-slogan">Site Slogan</label>
+                <input type="text" id="settings-site-slogan" class="form-control" value="The Ultimate Hub for Home, Garden & DIY Guest Articles">
+              </div>
+            </div>
+            
+            <div class="form-section-header"><span>🎨</span> Branding & Design</div>
+            <div class="form-grid-2" style="margin-bottom: 18px;">
+              <div class="form-group">
+                <label for="settings-brand-color">Primary Color</label>
+                <input type="color" id="settings-brand-color" class="form-control" style="height:45px;" value="#3b82f6">
+              </div>
+              <div class="form-group">
+                <label for="settings-logo-text">Branding Icon Text</label>
+                <input type="text" id="settings-logo-text" class="form-control" value="H">
+              </div>
+            </div>
+
+            <div class="form-section-header"><span>🔍</span> Global SEO & Security</div>
+            <div class="form-group" style="margin-bottom: 18px;">
+              <label for="settings-meta-keywords">Global Meta Keywords</label>
+              <input type="text" id="settings-meta-keywords" class="form-control" value="home decor, interior design, guest posts, landscaping, DIY">
+            </div>
+            <div class="form-grid-2" style="margin-bottom: 24px;">
+              <div class="form-group">
+                <label for="settings-security-level">Security Firewalls</label>
+                <select id="settings-security-level" class="form-control">
+                  <option value="Standard">Standard Firewall (Active)</option>
+                  <option value="High">High (Strict verification)</option>
+                  <option value="Medium">Medium</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="settings-allow-registrations">Allow Public Registrations</label>
+                <select id="settings-allow-registrations" class="form-control">
+                  <option value="No">No (Admin Invite Only)</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn" style="width:auto; padding:12px 40px;">💾 Save Site Configurations</button>
+          </form>
+        </div>
+      </div>
+
     </main>
   </div><!-- /.admin-layout-wrapper -->
 
@@ -796,6 +969,14 @@
     /* ════════════════════════════════════════════════
        ADMIN DASHBOARD ENGINE
     ════════════════════════════════════════════════ */
+
+    // Check role and update header text
+    (function() {
+      const loggedUser = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
+      if (loggedUser) {
+        document.getElementById('admin-user-info-text').innerHTML = `Logged in as: <strong>${loggedUser.email}</strong> &nbsp;·&nbsp; ${loggedUser.role}`;
+      }
+    })();
 
     // ── Live Clock ────────────────────────────────
     function updateClock() {
@@ -810,17 +991,30 @@
       overview: 'Dashboard Overview',
       articles: 'Manage Articles',
       create: 'Publish / Edit Article',
-      submissions: 'Guest Submissions',
-      newsletter: 'Newsletter Subscribers'
+      submissions: 'Submissions Review Inbox',
+      newsletter: 'Newsletter Subscribers',
+      authors: 'Author Accounts Manager',
+      settings: 'Website Configuration Settings'
     };
 
     const navItems = document.querySelectorAll('.admin-nav-item[data-tab]');
     navItems.forEach(item => {
       item.addEventListener('click', () => {
+        const target = item.getAttribute('data-tab');
+        
+        // Role check
+        const currentUser = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
+        if (currentUser) {
+          const rolesAllowed = item.getAttribute('data-roles');
+          if (rolesAllowed && !rolesAllowed.split(',').includes(currentUser.role)) {
+            showToast('Access denied: Insufficient privileges.', 'error');
+            return;
+          }
+        }
+
         navItems.forEach(n => n.classList.remove('active'));
         item.classList.add('active');
 
-        const target = item.getAttribute('data-tab');
         document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
         document.getElementById(`tab-${target}`).classList.add('active');
         document.getElementById('admin-page-title').textContent = pageTitles[target] || 'Admin';
@@ -828,6 +1022,7 @@
         if (target === 'articles') renderAdminArticles();
         if (target === 'submissions') renderAdminSubmissions();
         if (target === 'newsletter') renderAdminNewsletter();
+        if (target === 'authors') renderAuthorsTable();
         if (target !== 'create') exitEditMode();
       });
     });
@@ -835,19 +1030,101 @@
     // ── Logout ────────────────────────────────────
     document.getElementById('admin-logout-btn').addEventListener('click', () => {
       sessionStorage.removeItem('home_inserts_admin_logged_in');
+      sessionStorage.removeItem('home_inserts_logged_in_user');
       showToast('Logged out successfully.', 'success');
       setTimeout(() => window.location.href = 'index.html', 1000);
     });
 
+    // Setup sidebar elements based on roles
+    function setupSidebarRoleAccess() {
+      const currentUser = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
+      if (!currentUser) return;
+
+      const userRole = currentUser.role;
+
+      document.querySelectorAll('.admin-nav-item[data-roles]').forEach(item => {
+        const roles = item.getAttribute('data-roles').split(',');
+        if (roles.includes(userRole)) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+
+      // Hide Inbox section title if none of its kids are visible
+      const submissionsNav = document.querySelector('.admin-nav-item[data-tab="submissions"]');
+      const newsletterNav = document.querySelector('.admin-nav-item[data-tab="newsletter"]');
+      const settingsNav = document.querySelector('.admin-nav-item[data-tab="settings"]');
+      const inboxHeader = document.getElementById('inbox-section-title');
+      
+      if (inboxHeader) {
+        const hasVisibleInboxItem = (submissionsNav && submissionsNav.style.display !== 'none') || 
+                                    (newsletterNav && newsletterNav.style.display !== 'none') ||
+                                    (settingsNav && settingsNav.style.display !== 'none');
+        inboxHeader.style.display = hasVisibleInboxItem ? 'block' : 'none';
+      }
+    }
+    setupSidebarRoleAccess();
+
     // ── Stats ─────────────────────────────────────
     function updateStats() {
       setTimeout(() => {
-        document.getElementById('stat-articles').textContent = state.posts.length;
+        const currentUser = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
+        if (!currentUser) return;
+
+        let userPosts = [...state.posts];
+        if (currentUser.role === 'Author') {
+          userPosts = userPosts.filter(p => p.authorId === currentUser.username || p.author.toLowerCase() === currentUser.name.toLowerCase());
+        }
+        
+        document.getElementById('stat-articles').textContent = userPosts.length;
+        
         const subs = JSON.parse(localStorage.getItem('home_inserts_guest_submissions') || '[]');
-        document.getElementById('stat-submissions').textContent = subs.length;
+        const userSubmissions = JSON.parse(localStorage.getItem('home_inserts_user_posts') || '[]');
+        const pendingReviews = userSubmissions.filter(p => p.status === 'Pending Review');
+        
+        if (currentUser.role === 'Author') {
+          // Authors only see their own pending posts
+          const ownPending = pendingReviews.filter(p => p.authorId === currentUser.username || p.author.toLowerCase() === currentUser.name.toLowerCase());
+          document.getElementById('stat-submissions').textContent = ownPending.length;
+        } else {
+          document.getElementById('stat-submissions').textContent = subs.length + pendingReviews.length;
+        }
+
+        renderNotificationBanner();
       }, 500);
     }
     updateStats();
+
+    // Notification banner for admins/editors
+    function renderNotificationBanner() {
+      const currentUser = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
+      if (!currentUser || ['Author'].includes(currentUser.role)) return;
+
+      const guestSubmissions = JSON.parse(localStorage.getItem('home_inserts_guest_submissions') || '[]');
+      const userPosts = JSON.parse(localStorage.getItem('home_inserts_user_posts') || '[]');
+      const pendingAuthorPosts = userPosts.filter(p => p.status === 'Pending Review');
+      const totalPending = guestSubmissions.length + pendingAuthorPosts.length;
+
+      const statsGrid = document.querySelector('.admin-stats-grid');
+      let banner = document.getElementById('admin-alert-banner');
+      
+      if (totalPending > 0) {
+        if (!banner) {
+          banner = document.createElement('div');
+          banner.id = 'admin-alert-banner';
+          banner.style.cssText = 'background: #fffbeb; border: 1.5px solid #fef3c7; color: #b45309; padding: 16px; border-radius: 12px; margin-bottom: 24px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); grid-column: 1/-1;';
+          statsGrid.parentNode.insertBefore(banner, statsGrid);
+        }
+        banner.innerHTML = `
+          <span>🔔</span>
+          <span style="flex-grow:1;">You have <strong>${totalPending}</strong> pending article submissions awaiting review!</span>
+          <button class="btn btn-view" onclick="document.querySelector('.admin-nav-item[data-tab=\\'submissions\\']').click()" style="width:auto; padding:6px 14px; font-size:12px; background:#f59e0b; color:#fff; border:none; cursor:pointer;">Review Inbox</button>
+        `;
+      } else {
+        if (banner) banner.remove();
+      }
+    }
 
     /* ════════════════════════════════════════════════
        ARTICLES TABLE
@@ -856,22 +1133,44 @@
       const tbody = document.getElementById('admin-articles-list');
       tbody.innerHTML = '';
 
-      if (!state.posts.length) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--color-body-light); padding:30px;">No articles found.</td></tr>';
+      const currentUser = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
+      if (!currentUser) return;
+
+      let visiblePosts = [...state.posts];
+      if (currentUser.role === 'Author') {
+        visiblePosts = visiblePosts.filter(p => p.authorId === currentUser.username || p.author.toLowerCase() === currentUser.name.toLowerCase());
+      }
+
+      if (!visiblePosts.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--color-body-light); padding:30px;">No articles found.</td></tr>';
         return;
       }
 
-      state.posts.forEach(post => {
+      visiblePosts.forEach(post => {
         const tr = document.createElement('tr');
+        
+        const status = post.status || 'Published';
+        let statusClass = 'status-active';
+        if (status === 'Pending Review') statusClass = 'status-pending';
+        else if (status === 'Draft') statusClass = 'status-badge-suspended';
+        else if (status === 'Revision Requested') statusClass = 'status-badge-suspended';
+
+        let actionButtons = `<button class="action-btn btn-edit" onclick="editArticle(${post.id})">✏️ Edit</button>`;
+        
+        const isOwnPost = post.authorId === currentUser.username || post.author.toLowerCase() === currentUser.name.toLowerCase();
+        const canDelete = currentUser.role === 'Super Admin' || currentUser.role === 'Admin' || (currentUser.role === 'Author' && isOwnPost);
+        
+        if (canDelete) {
+          actionButtons += `<button class="action-btn btn-delete" onclick="deleteArticle(${post.id})">🗑️ Delete</button>`;
+        }
+
         tr.innerHTML = `
           <td><strong style="font-size:14px;">${post.title}</strong></td>
           <td><span style="font-size:12px; padding:3px 8px; background:#f0f4ff; color:#1967d2; border-radius:100px; font-weight:600;">${post.category}</span></td>
           <td style="font-size:13px;">${post.author}</td>
           <td style="font-size:13px; color:var(--color-body-light);">${post.date}</td>
-          <td>
-            <button class="action-btn btn-edit" onclick="editArticle(${post.id})">✏️ Edit</button>
-            <button class="action-btn btn-delete" onclick="deleteArticle(${post.id})">🗑️ Delete</button>
-          </td>
+          <td><span class="status-badge ${statusClass}">${status}</span></td>
+          <td>${actionButtons}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -886,7 +1185,9 @@
 
       // Switch to Create/Edit tab
       navItems.forEach(n => n.classList.remove('active'));
-      document.querySelector('.admin-nav-item[data-tab="create"]').classList.add('active');
+      const createTabBtn = document.querySelector('.admin-nav-item[data-tab="create"]');
+      if (createTabBtn) createTabBtn.classList.add('active');
+      
       document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
       document.getElementById('tab-create').classList.add('active');
       document.getElementById('admin-page-title').textContent = 'Edit Article';
@@ -901,7 +1202,16 @@
 
       // Populate content fields
       document.getElementById('admin-title').value = post.title || '';
+      
+      // Select correct author dropdown or set value
+      const selectEl = document.getElementById('admin-author-select');
+      if (selectEl) {
+        selectEl.value = post.authorId || 'guest-writer';
+      }
       document.getElementById('admin-author').value = post.author || 'Administrator';
+      const authorIdEl = document.getElementById('admin-author-id');
+      if (authorIdEl) authorIdEl.value = post.authorId || '';
+
       document.getElementById('admin-category').value = post.category || 'Lifestyle';
       document.getElementById('admin-tags').value = (post.tags || []).filter(t => t !== "Editor's Choice" && t !== post.category).join(', ');
       document.getElementById('admin-slug').value = post.slug || '';
@@ -910,6 +1220,22 @@
       document.getElementById('admin-image').value = post.image || '';
       document.getElementById('admin-image-alt').value = post.imageAlt || '';
       document.getElementById('admin-content').value = post.content || '';
+
+      // Populate Status selection
+      populateStatusSelection();
+      const statusEl = document.getElementById('admin-status');
+      if (statusEl) {
+        statusEl.value = post.status || 'Published';
+      }
+
+      // Check revision feedback
+      const notesBanner = document.getElementById('form-status-msg');
+      if (post.status === 'Revision Requested' && post.revisionNotes) {
+        notesBanner.innerHTML = `⚠️ <strong>Revision feedback:</strong> ${post.revisionNotes}`;
+        notesBanner.style.color = '#d97706';
+      } else {
+        notesBanner.innerHTML = '';
+      }
 
       // Populate SEO fields
       document.getElementById('admin-seo-title').value = post.seoTitle || '';
@@ -947,6 +1273,9 @@
       const btn = document.getElementById('form-submit-btn');
       btn.textContent = '🚀 Publish Immediately';
       btn.classList.remove('update-mode');
+      
+      populateAuthorSelection();
+      populateStatusSelection();
       runSeoAnalysis();
     }
 
@@ -994,8 +1323,12 @@
       const editId             = document.getElementById('admin-edit-id').value;
       const editSrc            = document.getElementById('admin-edit-source').value;
       const title              = document.getElementById('admin-title').value.trim();
+      
       const author             = document.getElementById('admin-author').value.trim();
+      const authorId           = document.getElementById('admin-author-id') ? document.getElementById('admin-author-id').value.trim() : '';
+      
       const category           = document.getElementById('admin-category').value;
+      const status             = document.getElementById('admin-status') ? document.getElementById('admin-status').value : 'Published';
       const tagsRaw            = document.getElementById('admin-tags').value.trim();
       const slug               = document.getElementById('admin-slug').value.trim();
       const excerpt            = document.getElementById('admin-excerpt').value.trim();
@@ -1026,6 +1359,8 @@
         title, slug, category, tags,
         date: new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }),
         author,
+        authorId,
+        status,
         readTime: `${Math.max(2, Math.ceil(content.split(' ').length / 200))} min read`,
         image, excerpt, articleDescription, imageAlt, content,
         // SEO
@@ -1045,17 +1380,31 @@
         const numId = parseInt(editId);
         postData.id = numId;
 
+        // If author is updating, clear revision notes on submit for review
+        const currentUser = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
+        if (currentUser && currentUser.role === 'Author') {
+          if (status === 'Pending Review') {
+            delete postData.revisionNotes;
+          }
+        }
+
         if (editSrc === 'user') {
           const idx = userPosts.findIndex(p => p.id === numId);
-          if (idx > -1) userPosts[idx] = postData;
+          if (idx > -1) {
+            // Preserve revision notes if status unchanged
+            if (userPosts[idx].revisionNotes && status === userPosts[idx].status) {
+              postData.revisionNotes = userPosts[idx].revisionNotes;
+            }
+            userPosts[idx] = postData;
+          }
           else userPosts.unshift(postData);
         } else {
-          // For seeded JSON posts: block the old one and save the edited version as a new user post
+          // For seeded JSON posts
           const blockedStr = localStorage.getItem('home_inserts_blocked_posts') || '[]';
           const blocked = JSON.parse(blockedStr);
           if (!blocked.includes(numId)) { blocked.push(numId); }
           localStorage.setItem('home_inserts_blocked_posts', JSON.stringify(blocked));
-          postData.id = Date.now(); // new unique ID
+          postData.id = Date.now();
           userPosts.unshift(postData);
         }
 
@@ -1066,7 +1415,7 @@
         postData.id = Date.now();
         userPosts.unshift(postData);
         localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
-        showToast('Article published successfully!', 'success');
+        showToast(status === 'Pending Review' ? 'Article submitted for review!' : 'Article published successfully!', 'success');
       }
 
       exitEditMode();
@@ -1326,22 +1675,43 @@
     setTimeout(runSeoAnalysis, 300);
 
     /* ════════════════════════════════════════════════
-       GUEST SUBMISSIONS
+       GUEST & AUTHOR SUBMISSIONS WORKFLOW
     ════════════════════════════════════════════════ */
     function renderAdminSubmissions() {
       const tbody = document.getElementById('admin-submissions-list');
       tbody.innerHTML = '';
-      const submissions = JSON.parse(localStorage.getItem('home_inserts_guest_submissions') || '[]');
+      
+      const guestSubmissions = JSON.parse(localStorage.getItem('home_inserts_guest_submissions') || '[]');
+      const userPosts = JSON.parse(localStorage.getItem('home_inserts_user_posts') || '[]');
+      const pendingAuthorPosts = userPosts.filter(p => p.status === 'Pending Review');
 
-      if (!submissions.length) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--color-body-light); padding:30px;">No guest submissions awaiting review.</td></tr>';
+      if (!guestSubmissions.length && !pendingAuthorPosts.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--color-body-light); padding:30px;">No submissions awaiting review.</td></tr>';
         return;
       }
 
-      submissions.forEach((sub, idx) => {
+      // Render Pending Author Posts
+      pendingAuthorPosts.forEach(post => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><strong>${sub.title}</strong></td>
+          <td><strong>${post.title} (Author)</strong></td>
+          <td>${post.author}</td>
+          <td>${post.category}</td>
+          <td style="font-size:12px; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${post.excerpt}</td>
+          <td>
+            <button class="action-btn btn-approve" onclick="approveAuthorPost(${post.id})">✅ Approve</button>
+            <button class="action-btn btn-edit" onclick="requestAuthorRevision(${post.id})" style="background:#fef3c7; color:#d97706;">⚠️ Revision</button>
+            <button class="action-btn btn-delete" onclick="rejectAuthorPost(${post.id})">❌ Reject</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Render Guest Submissions
+      guestSubmissions.forEach((sub, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${sub.title} (Guest)</strong></td>
           <td>${sub.author}</td>
           <td>${sub.category}</td>
           <td style="font-size:12px; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${sub.excerpt}</td>
@@ -1354,6 +1724,47 @@
       });
     }
 
+    window.approveAuthorPost = function(id) {
+      const userPosts = JSON.parse(localStorage.getItem('home_inserts_user_posts') || '[]');
+      const idx = userPosts.findIndex(p => p.id === id);
+      if (idx > -1) {
+        userPosts[idx].status = 'Published';
+        userPosts[idx].date = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+        delete userPosts[idx].revisionNotes; // clear any notes
+        localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
+        showToast('Author article approved and published!', 'success');
+        loadPosts().then(() => { renderAdminSubmissions(); updateStats(); });
+      }
+    };
+
+    window.requestAuthorRevision = function(id) {
+      const notes = prompt('Enter revision feedback notes for the author:');
+      if (notes === null) return; // cancelled
+      
+      const userPosts = JSON.parse(localStorage.getItem('home_inserts_user_posts') || '[]');
+      const idx = userPosts.findIndex(p => p.id === id);
+      if (idx > -1) {
+        userPosts[idx].status = 'Revision Requested';
+        userPosts[idx].revisionNotes = notes;
+        localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
+        showToast('Revision feedback sent to author.', 'success');
+        loadPosts().then(() => { renderAdminSubmissions(); updateStats(); });
+      }
+    };
+
+    window.rejectAuthorPost = function(id) {
+      if (!confirm('Reject and delete this submission? This moves it to Draft.')) return;
+      
+      const userPosts = JSON.parse(localStorage.getItem('home_inserts_user_posts') || '[]');
+      const idx = userPosts.findIndex(p => p.id === id);
+      if (idx > -1) {
+        userPosts[idx].status = 'Draft';
+        localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
+        showToast('Submission rejected and returned to drafts.', 'success');
+        loadPosts().then(() => { renderAdminSubmissions(); updateStats(); });
+      }
+    };
+
     window.approveSubmission = function(index) {
       const submissions = JSON.parse(localStorage.getItem('home_inserts_guest_submissions') || '[]');
       const approved = submissions.splice(index, 1)[0];
@@ -1362,6 +1773,7 @@
       const userPosts = JSON.parse(localStorage.getItem('home_inserts_user_posts') || '[]');
       approved.id = Date.now();
       approved.date = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+      approved.status = 'Published';
       userPosts.unshift(approved);
       localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
 
@@ -1403,6 +1815,283 @@
         tbody.appendChild(tr);
       });
     }
+
+    /* ════════════════════════════════════════════════
+       AUTHOR MANAGER
+    ════════════════════════════════════════════════ */
+    function renderAuthorsTable() {
+      const tbody = document.getElementById('admin-authors-list');
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+      const users = JSON.parse(localStorage.getItem('home_inserts_users') || '[]');
+
+      users.forEach(user => {
+        const tr = document.createElement('tr');
+        
+        let statusClass = 'status-active';
+        if (user.status === 'Suspended') statusClass = 'status-badge-suspended';
+
+        const currentUser = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
+        const isSelf = currentUser && currentUser.id === user.id;
+
+        let actionButtons = '';
+        if (!isSelf) {
+          actionButtons = `
+            <button class="action-btn btn-edit" onclick="editAuthor('${user.id}')">✏️ Edit</button>
+            <button class="action-btn ${user.status === 'Suspended' ? 'btn-approve' : 'btn-delete'}" onclick="toggleAuthorStatus('${user.id}')">
+              ${user.status === 'Suspended' ? '🟢 Activate' : '⛔ Suspend'}
+            </button>
+            <button class="action-btn btn-delete" onclick="deleteAuthor('${user.id}')">🗑️ Delete</button>
+          `;
+        } else {
+          actionButtons = `<span style="font-size:12px; color:var(--color-body-light); font-style:italic;">Active Session (You)</span>`;
+        }
+
+        tr.innerHTML = `
+          <td>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <img src="${user.image || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200'}" style="width:32px; height:32px; border-radius:50%; object-fit:cover;">
+              <strong>${user.name}</strong>
+            </div>
+          </td>
+          <td><span class="role-badge ${user.role.toLowerCase().replace(/\s+/g, '-')}">${user.role}</span></td>
+          <td style="font-size:13px;">${user.email}</td>
+          <td><span class="status-badge ${statusClass}">${user.status || 'Active'}</span></td>
+          <td>${actionButtons}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Toggle Author Password Visibility
+    const authorPasswordInput = document.getElementById('author-form-password');
+    const authorToggleBtn = document.getElementById('toggle-author-password');
+    if (authorToggleBtn && authorPasswordInput) {
+      const authorEyeIcon = authorToggleBtn.querySelector('.eye-icon');
+      const authorEyeOffIcon = authorToggleBtn.querySelector('.eye-off-icon');
+
+      authorToggleBtn.addEventListener('click', () => {
+        const isPassword = authorPasswordInput.type === 'password';
+        authorPasswordInput.type = isPassword ? 'text' : 'password';
+        authorEyeIcon.style.display = isPassword ? 'none' : 'block';
+        authorEyeOffIcon.style.display = isPassword ? 'block' : 'none';
+        authorToggleBtn.title = isPassword ? 'Hide password' : 'Show password';
+      });
+    }
+
+    document.getElementById('admin-author-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const editId = document.getElementById('author-edit-id').value;
+      const name = document.getElementById('author-form-name').value.trim();
+      const username = document.getElementById('author-form-username').value.trim().toLowerCase().replace(/\s+/g, '-');
+      const email = document.getElementById('author-form-email').value.trim();
+      const password = document.getElementById('author-form-password').value;
+      const role = document.getElementById('author-form-role').value;
+      const image = document.getElementById('author-form-image').value.trim() || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200';
+      const bio = document.getElementById('author-form-bio').value.trim();
+      const facebook = document.getElementById('author-form-fb').value.trim();
+      const twitter = document.getElementById('author-form-tw').value.trim();
+
+      let users = JSON.parse(localStorage.getItem('home_inserts_users') || '[]');
+
+      if (editId) {
+        const idx = users.findIndex(u => u.id === editId);
+        if (idx > -1) {
+          users[idx].name = name;
+          users[idx].username = username;
+          users[idx].email = email;
+          users[idx].password = password;
+          users[idx].role = role;
+          users[idx].image = image;
+          users[idx].bio = bio;
+          users[idx].socials = { facebook, twitter };
+          
+          localStorage.setItem('home_inserts_users', JSON.stringify(users));
+          showToast('Author profile updated successfully!', 'success');
+        }
+      } else {
+        if (users.some(u => u.username === username || u.email.toLowerCase() === email.toLowerCase())) {
+          showToast('Username or Email already exists.', 'error');
+          return;
+        }
+
+        const newUser = {
+          id: 'user-' + Date.now(),
+          name, username, email, password, role, image, bio,
+          socials: { facebook, twitter },
+          status: 'Active'
+        };
+
+        users.push(newUser);
+        localStorage.setItem('home_inserts_users', JSON.stringify(users));
+        showToast('New Author registered successfully!', 'success');
+      }
+
+      resetAuthorForm();
+      renderAuthorsTable();
+      populateAuthorSelection();
+    });
+
+    function resetAuthorForm() {
+      document.getElementById('author-edit-id').value = '';
+      document.getElementById('admin-author-form').reset();
+      
+      // Reset password field visibility toggler
+      const pwd = document.getElementById('author-form-password');
+      if (pwd) {
+        pwd.type = 'password';
+        const authorToggleBtn = document.getElementById('toggle-author-password');
+        if (authorToggleBtn) {
+          authorToggleBtn.querySelector('.eye-icon').style.display = 'block';
+          authorToggleBtn.querySelector('.eye-off-icon').style.display = 'none';
+          authorToggleBtn.title = 'Show password';
+        }
+      }
+
+      document.getElementById('author-form-header').innerHTML = '<span>👤</span> Register New Author';
+      document.getElementById('author-submit-btn').textContent = '➕ Register User';
+      document.getElementById('author-cancel-btn').style.display = 'none';
+      document.getElementById('author-form-username').disabled = false;
+    }
+
+    document.getElementById('author-cancel-btn').addEventListener('click', () => {
+      resetAuthorForm();
+    });
+
+    window.editAuthor = function(id) {
+      const users = JSON.parse(localStorage.getItem('home_inserts_users') || '[]');
+      const user = users.find(u => u.id === id);
+      if (!user) return;
+
+      document.getElementById('author-edit-id').value = user.id;
+      document.getElementById('author-form-name').value = user.name;
+      document.getElementById('author-form-username').value = user.username;
+      document.getElementById('author-form-username').disabled = true;
+      document.getElementById('author-form-email').value = user.email;
+      document.getElementById('author-form-password').value = user.password;
+      document.getElementById('author-form-role').value = user.role;
+      document.getElementById('author-form-image').value = user.image || '';
+      document.getElementById('author-form-bio').value = user.bio || '';
+      document.getElementById('author-form-fb').value = (user.socials && user.socials.facebook) || '';
+      document.getElementById('author-form-tw').value = (user.socials && user.socials.twitter) || '';
+
+      document.getElementById('author-form-header').innerHTML = '<span>👤</span> Edit Author Profile';
+      document.getElementById('author-submit-btn').textContent = '💾 Update User';
+      document.getElementById('author-cancel-btn').style.display = 'inline-block';
+      
+      const authorFormCard = document.getElementById('author-form-card');
+      if (authorFormCard) authorFormCard.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    window.toggleAuthorStatus = function(id) {
+      let users = JSON.parse(localStorage.getItem('home_inserts_users') || '[]');
+      const idx = users.findIndex(u => u.id === id);
+      if (idx > -1) {
+        users[idx].status = users[idx].status === 'Suspended' ? 'Active' : 'Suspended';
+        localStorage.setItem('home_inserts_users', JSON.stringify(users));
+        showToast(`User status set to ${users[idx].status}`, 'success');
+        renderAuthorsTable();
+      }
+    };
+
+    window.deleteAuthor = function(id) {
+      if (!confirm('Are you sure you want to delete this author? All their published posts will remain but will fallback to Guest profile.')) return;
+      let users = JSON.parse(localStorage.getItem('home_inserts_users') || '[]');
+      users = users.filter(u => u.id !== id);
+      localStorage.setItem('home_inserts_users', JSON.stringify(users));
+      showToast('Author profile deleted.', 'success');
+      renderAuthorsTable();
+      populateAuthorSelection();
+    };
+
+    /* ════════════════════════════════════════════════
+       SITE CONFIGURATION SETTINGS
+    ════════════════════════════════════════════════ */
+    document.getElementById('admin-settings-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      showToast('Website configurations saved successfully!', 'success');
+    });
+
+    /* ════════════════════════════════════════════════
+       DYNAMIC DOWNDOWNS & INITIALIZATION
+    ════════════════════════════════════════════════ */
+    function populateAuthorSelection() {
+      const wrapper = document.getElementById('author-select-wrapper');
+      if (!wrapper) return;
+
+      const currentUser = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
+      const users = JSON.parse(localStorage.getItem('home_inserts_users') || '[]');
+
+      if (currentUser.role === 'Author') {
+        wrapper.innerHTML = `
+          <label for="admin-author">Author Name <span style="color:#d93025;">*</span></label>
+          <input type="text" id="admin-author" class="form-control" value="${currentUser.name}" readonly>
+          <input type="hidden" id="admin-author-id" value="${currentUser.username}">
+        `;
+      } else {
+        let options = '';
+        users.forEach(u => {
+          options += `<option value="${u.username}" ${u.username === currentUser.username ? 'selected' : ''}>${u.name} (${u.role})</option>`;
+        });
+        options += `<option value="guest-writer">Guest Writer / Anonymous</option>`;
+
+        wrapper.innerHTML = `
+          <label for="admin-author-select">Select Author <span style="color:#d93025;">*</span></label>
+          <select id="admin-author-select" class="form-control" onchange="syncAuthorFields()">
+            ${options}
+          </select>
+          <input type="hidden" id="admin-author" value="${currentUser.name}">
+          <input type="hidden" id="admin-author-id" value="${currentUser.username}">
+        `;
+      }
+    }
+
+    window.syncAuthorFields = function() {
+      const select = document.getElementById('admin-author-select');
+      if (!select) return;
+      const val = select.value;
+      const users = JSON.parse(localStorage.getItem('home_inserts_users') || '[]');
+      const user = users.find(u => u.username === val);
+      
+      const authorInput = document.getElementById('admin-author');
+      const authorIdInput = document.getElementById('admin-author-id');
+      
+      if (user) {
+        authorInput.value = user.name;
+        authorIdInput.value = user.username;
+      } else if (val === 'guest-writer') {
+        authorInput.value = 'Guest Writer';
+        authorIdInput.value = 'guest-writer';
+      }
+    };
+
+    function populateStatusSelection() {
+      const select = document.getElementById('admin-status');
+      if (!select) return;
+
+      const currentUser = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
+      if (!currentUser) return;
+
+      select.innerHTML = '';
+      if (currentUser.role === 'Author') {
+        select.innerHTML = `
+          <option value="Draft" selected>Draft (Saved privately)</option>
+          <option value="Pending Review">Submit for Review</option>
+        `;
+      } else {
+        select.innerHTML = `
+          <option value="Published" selected>Published (Live)</option>
+          <option value="Pending Review">Pending Review</option>
+          <option value="Draft">Draft</option>
+        `;
+      }
+    }
+
+    // Call dynamic setup routines
+    populateAuthorSelection();
+    populateStatusSelection();
   </script>
 </body>
 </html>

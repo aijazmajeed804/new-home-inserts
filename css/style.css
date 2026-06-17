@@ -1665,3 +1665,242 @@ img {
   color: #c5221f;
 }
 
+/* ════════════════════════════════════════════════
+   AUTHOR MANAGEMENT & MULTI-AUTHOR SYSTEM STYLES
+════════════════════════════════════════════════ */
+
+/* Author Bio Card on single post page */
+.author-bio-card {
+  display: flex;
+  gap: 24px;
+  padding: 30px;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-top: 40px;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.author-bio-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #f0f4ff;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.author-bio-info {
+  flex-grow: 1;
+}
+
+.author-bio-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.author-bio-header h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-heading);
+}
+
+.author-bio-header h4 a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.author-bio-header h4 a:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+.author-bio-text {
+  margin: 0 0 14px 0;
+  font-size: 14px;
+  color: var(--color-body);
+  line-height: 1.6;
+}
+
+.author-bio-socials {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.author-bio-socials a {
+  color: var(--color-body-light);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition);
+}
+
+.author-bio-socials a:hover {
+  color: var(--color-primary);
+}
+
+/* Author Page Layout */
+.author-profile-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+  border-bottom: 1px solid var(--color-border);
+  padding: 50px 0;
+  text-align: center;
+  position: relative;
+}
+
+.author-profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.author-profile-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.author-profile-name {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-heading);
+  margin-bottom: 8px;
+}
+
+.author-profile-role {
+  display: inline-block;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  margin-bottom: 16px;
+}
+
+.author-profile-bio {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-body);
+  margin-bottom: 24px;
+}
+
+/* Badges for active status/role in tables */
+.status-badge-suspended {
+  background: #fce8e6;
+  color: #d93025;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.role-badge.super-admin {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+.role-badge.admin {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.role-badge.editor {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.role-badge.author {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+/* Form Styles for Author Manager and Site Settings */
+.form-section-desc {
+  font-size: 13px;
+  color: var(--color-body-light);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* Mobile responsive fixes for author bio card */
+@media (max-width: 600px) {
+  .author-bio-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+  }
+  .author-bio-avatar {
+    width: 80px;
+    height: 80px;
+  }
+  .author-bio-header {
+    justify-content: center;
+  }
+  .author-bio-socials {
+    justify-content: center;
+  }
+}
+
+/* Password Visibility Toggle Styles */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper .form-control {
+  padding-right: 44px; /* Ensure space for the toggle button */
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-body-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 50%;
+  transition: var(--transition);
+  z-index: 2;
+}
+
+.password-toggle-btn:hover {
+  color: var(--color-primary);
+  background-color: rgba(40, 114, 250, 0.08);
+}
+
+.password-toggle-btn svg {
+  display: block;
+  pointer-events: none; /* Let clicks pass to the button */
+}
+
+
+
