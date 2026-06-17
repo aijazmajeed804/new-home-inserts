@@ -64,85 +64,339 @@
       <div class="guest-submit-grid">
         
         <!-- Left Panel: Article Form -->
-        <section class="static-page-content" aria-label="Guest Post Submission Form">
+        <section class="static-page-content" aria-label="Guest Post Submission Form" style="padding: 24px;">
           <h1 style="font-size:26px; color:var(--color-heading); margin-bottom:16px; border-bottom:1px solid var(--color-border); padding-bottom:12px;">Submit Guest Article</h1>
-          <p style="font-size:14px; color:var(--color-body); margin-bottom:24px;">Fill out the form below. The sidebar on the right shows a live preview of how your article will look on the live site!</p>
+          <p style="font-size:14px; color:var(--color-body); margin-bottom:24px;">Fill out the form below. The sidebar on the right shows a live preview and real-time SEO analysis score card of your article!</p>
 
           <form id="guest-post-form">
-            <div class="form-group">
-              <label for="guest-title">Article Title *</label>
-              <input type="text" id="guest-title" class="form-control" required placeholder="e.g., 5 Tips for Choosing Living Room Furniture">
+            
+            <!-- ── SECTION 1: IDENTITY ── -->
+            <div style="margin-bottom: 24px;">
+              <h3 style="font-size:16px; border-bottom:1.5px solid var(--color-border); padding-bottom:8px; margin-bottom:16px; color:var(--color-heading);">📌 Article Identity</h3>
+              
+              <div class="form-grid-2" style="margin-bottom: 18px;">
+                <div class="form-group">
+                  <label for="guest-title">Article Title *</label>
+                  <input type="text" id="guest-title" class="form-control" required placeholder="e.g., 5 Tips for Choosing Living Room Furniture">
+                </div>
+                <div class="form-group">
+                  <label for="guest-author">Author Name *</label>
+                  <input type="text" id="guest-author" class="form-control" required placeholder="Your Name or Brand">
+                </div>
+              </div>
+
+              <div class="form-grid-2" style="margin-bottom: 18px;">
+                <div class="form-group">
+                  <label for="guest-category">Category *</label>
+                  <select id="guest-category" class="form-control" required>
+                    <option value="">Select a Category</option>
+                    <option value="Decor & Renovate">Decor & Renovate</option>
+                    <option value="Kitchen">Kitchen</option>
+                    <option value="Sleep & Comfort">Sleep & Comfort</option>
+                    <option value="Outdoor & Landscaping">Outdoor & Landscaping</option>
+                    <option value="Home Improvement">Home Improvement</option>
+                    <option value="Lifestyle">Lifestyle</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="guest-tags">Tags <span class="optional-tag">(comma-separated)</span></label>
+                  <input type="text" id="guest-tags" class="form-control" placeholder="e.g., Furniture, Bedroom, Storage">
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 18px;">
+                <label for="guest-slug">URL Slug *</label>
+                <div class="slug-input-group">
+                  <input type="text" id="guest-slug" class="form-control" required placeholder="best-dresser-buying-guide">
+                  <button type="button" class="slug-auto-btn" id="guest-slug-auto-btn" title="Auto-generate from title">🔄 Auto</button>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 18px;">
+                <label for="guest-excerpt">Card Excerpt / Short Summary *</label>
+                <input type="text" id="guest-excerpt" class="form-control" required placeholder="Short catchy summary (1-2 sentences) shown on list cards" maxlength="200">
+              </div>
+
+              <div class="form-group">
+                <label for="guest-article-description">Article Description *</label>
+                <textarea id="guest-article-description" class="form-control" rows="3" required placeholder="A brief general overview of the article content."></textarea>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="guest-author">Author Name *</label>
-              <input type="text" id="guest-author" class="form-control" required placeholder="Your Name or Brand">
+            <!-- ── SECTION 2: MEDIA ── -->
+            <div style="margin-bottom: 24px;">
+              <h3 style="font-size:16px; border-bottom:1.5px solid var(--color-border); padding-bottom:8px; margin-bottom:16px; color:var(--color-heading);">🖼️ Featured Media</h3>
+              
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label for="guest-image">Featured Image URL (Optional)</label>
+                  <input type="url" id="guest-image" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+                </div>
+                <div class="form-group">
+                  <label for="guest-image-alt">Image Alt Text *</label>
+                  <input type="text" id="guest-image-alt" class="form-control" required placeholder="Descriptive alt text for Featured Image">
+                </div>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="guest-category">Category *</label>
-              <select id="guest-category" class="form-control" required>
-                <option value="">Select a Category</option>
-                <option value="Decor & Renovate">Decor & Renovate</option>
-                <option value="Kitchen">Kitchen</option>
-                <option value="Sleep & Comfort">Sleep & Comfort</option>
-                <option value="Outdoor & Landscaping">Outdoor & Landscaping</option>
-                <option value="Home Improvement">Home Improvement</option>
-                <option value="Lifestyle">Lifestyle</option>
-              </select>
+            <!-- ── SECTION 3: SEO META SETTINGS ── -->
+            <div style="margin-bottom: 24px;">
+              <h3 style="font-size:16px; border-bottom:1.5px solid var(--color-border); padding-bottom:8px; margin-bottom:16px; color:var(--color-heading);">🔍 Google SEO & Meta Tags</h3>
+              
+              <div class="form-grid-2" style="margin-bottom: 18px;">
+                <div class="form-group">
+                  <label for="guest-seo-title">SEO Title <span class="optional-tag">(recommended: 50–60 chars)</span></label>
+                  <input type="text" id="guest-seo-title" class="form-control" placeholder="Title tag for search results" maxlength="80">
+                  <div class="char-count" id="seo-title-count">0 / 60</div>
+                </div>
+                <div class="form-group">
+                  <label for="guest-meta-title">Meta Title <span class="optional-tag">(recommended: 50–60 chars)</span></label>
+                  <input type="text" id="guest-meta-title" class="form-control" placeholder="Meta title tag" maxlength="80">
+                  <div class="char-count" id="meta-title-count">0 / 60</div>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 18px;">
+                <label for="guest-meta-description">Meta Description <span class="optional-tag">(recommended: 120–160 chars)</span></label>
+                <textarea id="guest-meta-description" class="form-control" rows="3" placeholder="Compelling summary snippet shown under title in search engine results." maxlength="200"></textarea>
+                <div class="char-count" id="meta-desc-count">0 / 160</div>
+              </div>
+
+              <div class="form-grid-2" style="margin-bottom: 18px;">
+                <div class="form-group">
+                  <label for="guest-focus-keyword">Focus Keyword *</label>
+                  <input type="text" id="guest-focus-keyword" class="form-control" required placeholder="e.g., tall dresser buying guide">
+                </div>
+                <div class="form-group">
+                  <label for="guest-secondary-keywords">Secondary Keywords <span class="optional-tag">(comma-separated)</span></label>
+                  <input type="text" id="guest-secondary-keywords" class="form-control" placeholder="e.g., bedroom storage, bedroom styling">
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label for="guest-seo-canonical">Canonical URL <span class="optional-tag">(optional)</span></label>
+                  <input type="url" id="guest-seo-canonical" class="form-control" placeholder="https://homeinserts.com/articles/your-slug">
+                </div>
+                <div class="form-group">
+                  <label for="guest-og-image">OG / Social Share Image URL <span class="optional-tag">(optional)</span></label>
+                  <input type="url" id="guest-og-image" class="form-control" placeholder="Defaults to featured image URL if blank">
+                </div>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="guest-image">Featured Image URL (Optional)</label>
-              <input type="url" id="guest-image" class="form-control" placeholder="https://images.unsplash.com/photo-...">
-              <span style="font-size:11px; color:var(--color-body-light); display:block; margin-top:4px;">Tip: Paste a landscape photo URL from Unsplash. Left blank, a default will be assigned.</span>
+            <!-- ── SECTION 4: BODY CONTENT ── -->
+            <div style="margin-bottom: 24px;">
+              <h3 style="font-size:16px; border-bottom:1.5px solid var(--color-border); padding-bottom:8px; margin-bottom:16px; color:var(--color-heading);">✍️ Article Content Body</h3>
+              <div class="form-group">
+                <label for="guest-content">Article Body * <span class="optional-tag">(HTML allowed)</span></label>
+                <textarea id="guest-content" class="form-control" rows="14" required placeholder="Write your full article here using HTML tags like &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt;, etc."></textarea>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label for="guest-excerpt">Excerpt / Card Summary *</label>
-              <input type="text" id="guest-excerpt" class="form-control" required placeholder="A short, catchy summary of the article (1-2 sentences)" maxlength="200">
+            <!-- ── ACTION ROW ── -->
+            <div id="guest-seo-ready-banner" class="seo-ready-banner poor" style="margin-bottom: 20px;">
+              <span class="seo-ready-icon">🔴</span>
+              <span class="seo-ready-text">Your SEO Score is under 70%. We recommend resolving critical issues before submitting.</span>
             </div>
-
-            <div class="form-group">
-              <label for="guest-content">Article Body Content *</label>
-              <textarea id="guest-content" class="form-control" rows="12" required placeholder="Write your full article here. Start typing to see it populate the layout preview..."></textarea>
-            </div>
-
-            <button type="submit" class="btn" style="padding:14px; font-size:16px;">Publish Article Instantly</button>
+            <button type="submit" class="btn" style="padding:14px; font-size:16px;">🚀 Submit Draft for Review</button>
           </form>
         </section>
 
-        <!-- Right Panel: Live Preview -->
-        <section class="editor-preview-panel" aria-label="Editorial Preview">
-          <div class="preview-title-bar">
-            <span>Editorial Layout Preview</span>
-            <span class="preview-badge">LIVE PREVIEW</span>
+        <!-- Right Panel: Live Preview & SEO Analyzer -->
+        <section class="editor-preview-panel" aria-label="Editorial Preview" style="position: sticky; top: 100px; height: calc(100vh - 150px); display: flex; flex-direction: column;">
+          
+          <!-- Tab controls -->
+          <div class="preview-tabs-nav">
+            <button type="button" class="preview-tab-btn active" id="guest-tab-btn-preview">🖥️ Page Preview</button>
+            <button type="button" class="preview-tab-btn" id="guest-tab-btn-seo">📊 SEO Report <span id="guest-seo-score-badge" style="background:#e74c3c; color:#fff; padding:2px 6px; border-radius:10px; font-size:10px; margin-left:5px; font-weight:700;">0%</span></button>
           </div>
 
-          <div class="editor-preview-content">
-            <!-- Simulated Article Card -->
-            <article class="entry-card" style="box-shadow:none; margin-bottom:24px;">
-              <div class="card-media">
-                <img id="p-image" src="" alt="Preview image" style="display:none;">
-              </div>
-              <div class="card-body" style="padding:16px;">
-                <span class="card-category" id="p-category">Category</span>
-                <h3 class="card-title" id="p-title" style="font-size:16px;">Your Article Title</h3>
-                <p class="card-excerpt" id="p-excerpt" style="font-size:13px;">A brief summary of your article will appear here...</p>
-                <div class="card-meta" style="padding-top:10px; font-size:10px;">
-                  <span class="meta-author" id="p-author">Author Name</span>
-                  <span class="meta-date" id="p-date">Date</span>
+          <!-- Content wrapper with scroll -->
+          <div style="flex-grow:1; overflow-y:auto; padding-right:4px;">
+            
+            <!-- Tab CONTENT 1: Layout Preview -->
+            <div class="preview-tab-content active" id="guest-panel-preview">
+              
+              <!-- Google Search Result Preview -->
+              <div class="seo-preview" style="margin-bottom: 20px;">
+                <div class="seo-preview-title">🔎 Google SERP Snippet Preview</div>
+                <div class="seo-preview-inner">
+                  <div class="seo-preview-url" id="seo-prev-url">homeinserts.com › articles › your-article-slug</div>
+                  <div class="seo-preview-heading" id="seo-prev-title">Your Article Title Will Appear Here</div>
+                  <div class="seo-preview-desc" id="seo-prev-desc">Your meta description will appear here. Make it compelling to improve click-through rates from search engines.</div>
                 </div>
               </div>
-            </article>
 
-            <hr style="border:none; border-top:1px solid var(--color-border); margin:20px 0;">
+              <!-- Simulated Article Card -->
+              <article class="entry-card" style="box-shadow:none; margin-bottom:24px; border:1px solid var(--color-border);">
+                <div class="card-media">
+                  <img id="p-image" src="" alt="Preview image" style="display:none;">
+                </div>
+                <div class="card-body" style="padding:16px;">
+                  <span class="card-category" id="p-category">Category</span>
+                  <h3 class="card-title" id="p-title" style="font-size:16px;">Your Article Title</h3>
+                  <p class="card-excerpt" id="p-excerpt" style="font-size:13px;">A brief summary of your article will appear here...</p>
+                  <div class="card-meta" style="padding-top:10px; font-size:10px;">
+                    <span class="meta-author" id="p-author">Author Name</span>
+                    <span class="meta-date" id="p-date">Date</span>
+                  </div>
+                </div>
+              </article>
 
-            <!-- Full Article preview snippet -->
-            <div style="font-size:13px; line-height:1.6; color:var(--color-body);" id="p-content">
-              <p>Your full article content will render here in real-time as you type...</p>
+              <hr style="border:none; border-top:1px solid var(--color-border); margin:20px 0;">
+
+              <!-- Full Article preview snippet -->
+              <div style="font-size:13px; line-height:1.6; color:var(--color-body); background:#fff; padding:20px; border-radius:var(--radius-md); border:1px solid var(--color-border);" id="p-content">
+                <p>Your full article content will render here in real-time as you type...</p>
+              </div>
             </div>
-          </div>
+
+            <!-- Tab CONTENT 2: SEO Analyzer Report -->
+            <div class="preview-tab-content" id="guest-panel-seo">
+              
+              <!-- Main score card -->
+              <div class="seo-score-dashboard">
+                <div class="seo-score-radial-wrapper">
+                  <div class="seo-circle-progress">
+                    <svg class="seo-circle-svg" viewBox="0 0 120 120">
+                      <circle class="seo-circle-bg" cx="60" cy="60" r="50"></circle>
+                      <circle class="seo-circle-bar" id="guest-seo-circle-fill" cx="60" cy="60" r="50"></circle>
+                    </svg>
+                    <div class="seo-circle-text" id="guest-seo-score-percent">0%</div>
+                  </div>
+                  <div class="seo-score-status-badge status-badge-poor" id="guest-seo-status-badge">
+                    <span id="guest-seo-status-dot">🔴</span> <span id="guest-seo-status-text">Needs Improvement</span>
+                  </div>
+                </div>
+
+                <!-- Subscores -->
+                <div class="seo-subscores-grid">
+                  <div class="seo-subscore-item">
+                    <div class="seo-subscore-label">
+                      <span>Quality</span>
+                      <span id="guest-subscore-quality-val">0%</span>
+                    </div>
+                    <div class="seo-subscore-bar-bg">
+                      <div class="seo-subscore-bar-fill bar-fill-poor" id="guest-subscore-quality-fill"></div>
+                    </div>
+                  </div>
+                  <div class="seo-subscore-item">
+                    <div class="seo-subscore-label">
+                      <span>Readability</span>
+                      <span id="guest-subscore-readability-val">0%</span>
+                    </div>
+                    <div class="seo-subscore-bar-bg">
+                      <div class="seo-subscore-bar-fill bar-fill-poor" id="guest-subscore-readability-fill"></div>
+                    </div>
+                  </div>
+                  <div class="seo-subscore-item">
+                    <div class="seo-subscore-label">
+                      <span>Technical</span>
+                      <span id="guest-subscore-technical-val">0%</span>
+                    </div>
+                    <div class="seo-subscore-bar-bg">
+                      <div class="seo-subscore-bar-fill bar-fill-poor" id="guest-subscore-technical-fill"></div>
+                    </div>
+                  </div>
+                  <div class="seo-subscore-item">
+                    <div class="seo-subscore-label">
+                      <span>Optimization</span>
+                      <span id="guest-subscore-optimization-val">0%</span>
+                    </div>
+                    <div class="seo-subscore-bar-bg">
+                      <div class="seo-subscore-bar-fill bar-fill-poor" id="guest-subscore-optimization-fill"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Suggestions Alert list -->
+              <div class="seo-suggestions-card">
+                <div class="seo-suggestions-title">
+                  <span>💡 Actionable Recommendations</span>
+                </div>
+                <div class="seo-suggestions-list" id="guest-seo-suggestions-container">
+                  <div class="seo-suggestion-item info">
+                    <span class="seo-suggestion-item-icon">ℹ️</span>
+                    <span>Fill out the fields to receive optimization suggestions.</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Accordion Checklist -->
+              <div class="seo-accordion">
+                
+                <!-- Accordion 1: SEO Title & Meta Checks -->
+                <div class="seo-accordion-item open" id="guest-seo-acc-title">
+                  <button type="button" class="seo-accordion-header" onclick="toggleSeoAccordion('guest-seo-acc-title')">
+                    <div class="seo-accordion-header-left">
+                      <span>Title &amp; Meta Verification</span>
+                      <span class="seo-accordion-header-count" id="guest-seo-check-count-title">0/3</span>
+                    </div>
+                    <span class="seo-accordion-header-arrow">▼</span>
+                  </button>
+                  <div class="seo-accordion-content">
+                    <div class="seo-checklist-list" id="guest-seo-checklist-title">
+                      <!-- Filled dynamically -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Accordion 2: Content Optimization Checks -->
+                <div class="seo-accordion-item open" id="guest-seo-acc-content">
+                  <button type="button" class="seo-accordion-header" onclick="toggleSeoAccordion('guest-seo-acc-content')">
+                    <div class="seo-accordion-header-left">
+                      <span>Content &amp; Keywords</span>
+                      <span class="seo-accordion-header-count" id="guest-seo-check-count-content">0/6</span>
+                    </div>
+                    <span class="seo-accordion-header-arrow">▼</span>
+                  </button>
+                  <div class="seo-accordion-content">
+                    <div class="seo-checklist-list" id="guest-seo-checklist-content">
+                      <!-- Filled dynamically -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Accordion 3: Link & Media Checks -->
+                <div class="seo-accordion-item open" id="guest-seo-acc-links">
+                  <button type="button" class="seo-accordion-header" onclick="toggleSeoAccordion('guest-seo-acc-links')">
+                    <div class="seo-accordion-header-left">
+                      <span>Links &amp; Featured Media</span>
+                      <span class="seo-accordion-header-count" id="guest-seo-check-count-links">0/3</span>
+                    </div>
+                    <span class="seo-accordion-header-arrow">▼</span>
+                  </button>
+                  <div class="seo-accordion-content">
+                    <div class="seo-checklist-list" id="guest-seo-checklist-links">
+                      <!-- Filled dynamically -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Accordion 4: Technical & Indexability Checks -->
+                <div class="seo-accordion-item open" id="guest-seo-acc-tech">
+                  <button type="button" class="seo-accordion-header" onclick="toggleSeoAccordion('guest-seo-acc-tech')">
+                    <div class="seo-accordion-header-left">
+                      <span>Technical SEO &amp; Indexability</span>
+                      <span class="seo-accordion-header-count" id="guest-seo-check-count-tech">0/6</span>
+                    </div>
+                    <span class="seo-accordion-header-arrow">▼</span>
+                  </button>
+                  <div class="seo-accordion-content">
+                    <div class="seo-checklist-list" id="guest-seo-checklist-tech">
+                      <!-- Filled dynamically -->
+                    </div>
+                  </div>
+                </div>
+
+              </div><!-- /.seo-accordion -->
+
+            </div><!-- /#guest-panel-seo -->
+
+          </div><!-- /content scroll -->
+
         </section>
 
       </div>
@@ -217,6 +471,7 @@
   </footer>
 
   <!-- Application Logic -->
+  <script src="js/seo-analyzer.js"></script>
   <script src="js/app.js"></script>
   
   <script>
@@ -238,6 +493,332 @@
         menu.style.boxShadow = '0 10px 15px rgba(0,0,0,0.05)';
       }
     });
+
+    // Handle Tab controls for right preview panel
+    document.getElementById('guest-tab-btn-preview').addEventListener('click', () => {
+      document.getElementById('guest-tab-btn-preview').classList.add('active');
+      document.getElementById('guest-tab-btn-seo').classList.remove('active');
+      document.getElementById('guest-panel-preview').classList.add('active');
+      document.getElementById('guest-panel-seo').classList.remove('active');
+    });
+
+    document.getElementById('guest-tab-btn-seo').addEventListener('click', () => {
+      document.getElementById('guest-tab-btn-preview').classList.remove('active');
+      document.getElementById('guest-tab-btn-seo').classList.add('active');
+      document.getElementById('guest-panel-preview').classList.remove('active');
+      document.getElementById('guest-panel-seo').classList.add('active');
+    });
+
+    // Toggle checklists inside accordion
+    window.toggleSeoAccordion = function(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('open');
+    };
+
+    // Auto generate slug from title
+    document.getElementById('guest-slug-auto-btn').addEventListener('click', () => {
+      const title = document.getElementById('guest-title').value.trim();
+      const slugInput = document.getElementById('guest-slug');
+      if (title) {
+        const slug = title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+        slugInput.value = slug;
+        runSeoAnalysis();
+      } else {
+        showToast('Please enter an Article Title first.', 'error');
+      }
+    });
+
+    // Run dynamic analysis on change
+    function runSeoAnalysis() {
+      // Gather inputs
+      const data = {
+        title:              document.getElementById('guest-title').value,
+        seoTitle:           document.getElementById('guest-seo-title').value,
+        excerpt:            document.getElementById('guest-excerpt').value,
+        metaTitle:          document.getElementById('guest-meta-title').value,
+        metaDescription:    document.getElementById('guest-meta-description').value,
+        focusKeyword:       document.getElementById('guest-focus-keyword').value,
+        secondaryKeywords:  document.getElementById('guest-secondary-keywords').value,
+        slug:               document.getElementById('guest-slug').value,
+        image:              document.getElementById('guest-image').value,
+        imageAlt:           document.getElementById('guest-image-alt').value,
+        author:             document.getElementById('guest-author').value,
+        category:           document.getElementById('guest-category').value,
+        tags:               document.getElementById('guest-tags').value,
+        content:            document.getElementById('guest-content').value,
+        canonical:          document.getElementById('guest-seo-canonical').value
+      };
+
+      // ── 1. CHAR COUNTS ──
+      const titleLen = data.seoTitle.length;
+      document.getElementById('seo-title-count').textContent = `${titleLen} / 60`;
+      document.getElementById('seo-title-count').className = 'char-count' + (titleLen > 60 ? ' over' : titleLen > 50 ? ' warning' : '');
+
+      const metaTitleLen = data.metaTitle.length;
+      document.getElementById('meta-title-count').textContent = `${metaTitleLen} / 60`;
+      document.getElementById('meta-title-count').className = 'char-count' + (metaTitleLen > 60 ? ' over' : metaTitleLen > 50 ? ' warning' : '');
+
+      const metaDescLen = data.metaDescription.length;
+      document.getElementById('meta-desc-count').textContent = `${metaDescLen} / 160`;
+      document.getElementById('meta-desc-count').className = 'char-count' + (metaDescLen > 160 ? ' over' : metaDescLen > 140 ? ' warning' : '');
+
+      // ── 2. PREVIEWS ──
+      // SERP URL slug preview
+      const slugVal = data.slug || 'your-article-slug';
+      document.getElementById('seo-prev-url').textContent = `homeinserts.com › articles › ${slugVal}`;
+
+      // SERP Title
+      const sTitleVal = data.seoTitle || data.title || 'Your Article Title Will Appear Here';
+      document.getElementById('seo-prev-title').textContent = sTitleVal.length > 60 ? sTitleVal.slice(0, 57) + '...' : sTitleVal;
+
+      // SERP Meta Desc
+      const mDescVal = data.metaDescription || data.excerpt || 'Your meta description will appear here. Make it compelling to improve click-through rates from search engines.';
+      document.getElementById('seo-prev-desc').textContent = mDescVal.length > 160 ? mDescVal.slice(0, 157) + '...' : mDescVal;
+
+      // Layout Preview Card Image
+      const imgEl = document.getElementById('p-image');
+      if (data.image) {
+        imgEl.src = data.image;
+        imgEl.style.display = 'block';
+      } else {
+        imgEl.style.display = 'none';
+      }
+
+      // Layout Preview Labels
+      document.getElementById('p-category').textContent = data.category || 'Category';
+      document.getElementById('p-title').textContent = data.title || 'Your Article Title';
+      document.getElementById('p-excerpt').textContent = data.excerpt || 'A brief summary of your article will appear here...';
+      document.getElementById('p-author').textContent = data.author || 'Author Name';
+      document.getElementById('p-date').textContent = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+      document.getElementById('p-content').innerHTML = data.content ? data.content : '<p>Your full article content will render here in real-time as you type...</p>';
+
+      // ── 3. RUN ANALYSIS ──
+      if (typeof SEOAnalyzer === 'undefined') return;
+      const report = SEOAnalyzer.analyze(data);
+      const score = report.scores.seo;
+
+      // ── 4. UPDATE RADIAL SCORE & BADGES ──
+      document.getElementById('guest-seo-score-badge').textContent = `${score}%`;
+      document.getElementById('guest-seo-score-percent').textContent = `${score}%`;
+
+      // Stroke dashoffset logic (314.16 is circle perimeter)
+      const fillOffset = 314.16 * (1 - score / 100);
+      const strokeFill = document.getElementById('guest-seo-circle-fill');
+      strokeFill.style.strokeDashoffset = fillOffset;
+
+      // Color-coding based on score
+      const statusBadge = document.getElementById('guest-seo-status-badge');
+      const statusText = document.getElementById('guest-seo-status-text');
+      const statusDot = document.getElementById('guest-seo-status-dot');
+      const readyBanner = document.getElementById('guest-seo-ready-banner');
+      const readyBannerText = readyBanner.querySelector('.seo-ready-text');
+      const readyBannerIcon = readyBanner.querySelector('.seo-ready-icon');
+
+      statusBadge.className = 'seo-score-status-badge';
+      readyBanner.className = 'seo-ready-banner';
+
+      if (score >= 90) {
+        strokeFill.style.stroke = '#2ecc71';
+        statusBadge.classList.add('status-badge-excellent');
+        statusText.textContent = 'Excellent SEO';
+        statusDot.textContent = '🟢';
+        document.getElementById('guest-seo-score-badge').style.background = '#2ecc71';
+
+        readyBanner.classList.add('excellent');
+        readyBannerIcon.textContent = '🟢';
+        readyBannerText.textContent = 'Your article is fully optimized for SEO and ready for indexing!';
+      } else if (score >= 70) {
+        strokeFill.style.stroke = '#f1c40f';
+        statusBadge.classList.add('status-badge-good');
+        statusText.textContent = 'Good SEO';
+        statusDot.textContent = '🟡';
+        document.getElementById('guest-seo-score-badge').style.background = '#f1c40f';
+
+        readyBanner.classList.add('good');
+        readyBannerIcon.textContent = '🟡';
+        readyBannerText.textContent = 'Good SEO score, but could be improved. Ready for indexing.';
+      } else {
+        strokeFill.style.stroke = '#e74c3c';
+        statusBadge.classList.add('status-badge-poor');
+        statusText.textContent = 'Needs Improvement';
+        statusDot.textContent = '🔴';
+        document.getElementById('guest-seo-score-badge').style.background = '#e74c3c';
+
+        readyBanner.classList.add('poor');
+        readyBannerIcon.textContent = '🔴';
+        readyBannerText.textContent = 'Your SEO Score is under 70%. We recommend resolving critical issues before submitting.';
+      }
+
+      // ── 5. SUB-SCORES BARS ──
+      updateSubScoreBar('guest-subscore-quality', report.scores.quality);
+      updateSubScoreBar('guest-subscore-readability', report.scores.readability);
+      updateSubScoreBar('guest-subscore-technical', report.scores.technical);
+      updateSubScoreBar('guest-subscore-optimization', report.scores.optimization);
+
+      // ── 6. RENDER SUGGESTIONS ──
+      const suggestionsList = document.getElementById('guest-seo-suggestions-container');
+      suggestionsList.innerHTML = '';
+      if (report.suggestions.length === 0) {
+        suggestionsList.innerHTML = `
+          <div class="seo-suggestion-item info" style="border-left-color: #2ecc71;">
+            <span class="seo-suggestion-item-icon">🎉</span>
+            <span>All checks passed! Your article is fully optimized for search engines.</span>
+          </div>
+        `;
+      } else {
+        report.suggestions.forEach(sug => {
+          const isWarning = sug.includes('missing') || sug.includes('Write') || sug.includes('stuffing') || sug.includes('too short') || sug.includes('Define');
+          const div = document.createElement('div');
+          div.className = 'seo-suggestion-item' + (!isWarning ? ' info' : '');
+          div.innerHTML = `
+            <span class="seo-suggestion-item-icon">${isWarning ? '⚠️' : 'ℹ️'}</span>
+            <span>${sug}</span>
+          `;
+          suggestionsList.appendChild(div);
+        });
+      }
+
+      // ── 7. RENDER CHECKLIST ACCORDIONS ──
+      const titleChecks = ['title-len', 'meta-title-len', 'meta-desc-len'];
+      const contentChecks = ['focus-keyword-presence', 'focus-keyword-in-title', 'focus-keyword-in-desc', 'focus-keyword-in-slug', 'focus-keyword-in-first-para', 'focus-keyword-in-headings', 'content-length', 'keyword-density', 'readability'];
+      const linksChecks = ['internal-links', 'external-links', 'image-alt-text'];
+      const techChecks = ['schema-markup', 'mobile-seo', 'canonical-url', 'og-validation', 'sitemap-inclusion', 'indexability'];
+
+      renderSectionChecklist('guest-seo-checklist-title', 'guest-seo-check-count-title', report.checks.filter(c => titleChecks.includes(c.id)));
+      renderSectionChecklist('guest-seo-checklist-content', 'guest-seo-check-count-content', report.checks.filter(c => contentChecks.includes(c.id)));
+      renderSectionChecklist('guest-seo-checklist-links', 'guest-seo-check-count-links', report.checks.filter(c => linksChecks.includes(c.id)));
+      renderSectionChecklist('guest-seo-checklist-tech', 'guest-seo-check-count-tech', report.checks.filter(c => techChecks.includes(c.id)));
+    }
+
+    function updateSubScoreBar(baseId, score) {
+      document.getElementById(`${baseId}-val`).textContent = `${score}%`;
+      const bar = document.getElementById(`${baseId}-fill`);
+      bar.style.width = `${score}%`;
+      bar.className = 'seo-subscore-bar-fill';
+      if (score >= 90) bar.classList.add('bar-fill-excellent');
+      else if (score >= 70) bar.classList.add('bar-fill-good');
+      else bar.classList.add('bar-fill-poor');
+    }
+
+    function renderSectionChecklist(containerId, countId, checks) {
+      const container = document.getElementById(containerId);
+      const countEl = document.getElementById(countId);
+      container.innerHTML = '';
+      
+      const passed = checks.filter(c => c.status === 'pass').length;
+      countEl.textContent = `${passed} / ${checks.length}`;
+
+      checks.forEach(c => {
+        const item = document.createElement('div');
+        item.className = `seo-check-item ${c.status}`;
+        
+        let icon = '❌';
+        if (c.status === 'pass') icon = '✅';
+        else if (c.status === 'warning') icon = '⚠️';
+
+        item.innerHTML = `
+          <span class="seo-check-icon">${icon}</span>
+          <span class="seo-check-text"><strong>${c.name}</strong> - ${c.message}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Attach events on inputs for real time analysis
+    const elementsToHook = [
+      'guest-title', 'guest-seo-title', 'guest-excerpt', 'guest-meta-title', 
+      'guest-meta-description', 'guest-focus-keyword', 'guest-secondary-keywords', 
+      'guest-slug', 'guest-image', 'guest-image-alt', 'guest-author', 
+      'guest-category', 'guest-tags', 'guest-content', 'guest-seo-canonical', 'guest-og-image'
+    ];
+    elementsToHook.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', runSeoAnalysis);
+        el.addEventListener('change', runSeoAnalysis);
+      }
+    });
+
+    // Guest post submit handler
+    document.getElementById('guest-post-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const titleVal       = document.getElementById('guest-title').value.trim();
+      const authorVal      = document.getElementById('guest-author').value.trim();
+      const categoryVal    = document.getElementById('guest-category').value;
+      const tagsRaw        = document.getElementById('guest-tags').value.trim();
+      const slugVal        = document.getElementById('guest-slug').value.trim();
+      const excerptVal     = document.getElementById('guest-excerpt').value.trim();
+      const descriptionVal = document.getElementById('guest-article-description').value.trim();
+      const imageVal       = document.getElementById('guest-image').value.trim() || 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=800';
+      const imageAltVal    = document.getElementById('guest-image-alt').value.trim();
+      const contentVal     = document.getElementById('guest-content').value.trim();
+
+      // SEO fields
+      const seoTitleVal        = document.getElementById('guest-seo-title').value.trim();
+      const metaTitleVal       = document.getElementById('guest-meta-title').value.trim();
+      const metaDescriptionVal = document.getElementById('guest-meta-description').value.trim();
+      const focusKeywordVal    = document.getElementById('guest-focus-keyword').value.trim();
+      const secondaryKwRaw     = document.getElementById('guest-secondary-keywords').value.trim();
+      const secondaryKeywords  = secondaryKwRaw ? secondaryKwRaw.split(',').map(k => k.trim()).filter(Boolean) : [];
+      const canonicalVal       = document.getElementById('guest-seo-canonical').value.trim();
+      const ogImageVal         = document.getElementById('guest-og-image').value.trim();
+
+      if (!titleVal || !authorVal || !categoryVal || !excerptVal || !contentVal) {
+        showToast('Please fill out all required fields.', 'error');
+        return;
+      }
+
+      // Parse tags
+      let tags = ["Guest Post", categoryVal];
+      if (tagsRaw) {
+        tagsRaw.split(',').map(t => t.trim()).forEach(t => {
+          if (t && !tags.includes(t)) tags.push(t);
+        });
+      }
+
+      const newPost = {
+        id: Date.now(),
+        title: titleVal,
+        slug: slugVal || titleVal.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-'),
+        category: categoryVal,
+        tags: tags,
+        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+        author: authorVal,
+        readTime: `${Math.max(2, Math.ceil(contentVal.split(' ').length / 200))} min read`,
+        image: imageVal,
+        excerpt: excerptVal,
+        articleDescription: descriptionVal,
+        imageAlt: imageAltVal,
+        content: contentVal,
+        // SEO
+        seoTitle: seoTitleVal || titleVal,
+        metaTitle: metaTitleVal || seoTitleVal || titleVal,
+        metaDescription: metaDescriptionVal || excerptVal,
+        focusKeyword: focusKeywordVal,
+        secondaryKeywords,
+        canonical: canonicalVal,
+        ogImage: ogImageVal || imageVal
+      };
+
+      // Save to localStorage list of guest submissions for admin review
+      const submissionsStr = localStorage.getItem('home_inserts_guest_submissions');
+      const submissions = submissionsStr ? JSON.parse(submissionsStr) : [];
+      submissions.unshift(newPost);
+      localStorage.setItem('home_inserts_guest_submissions', JSON.stringify(submissions));
+
+      showToast('Article submitted for review successfully!', 'success');
+      document.getElementById('guest-post-form').reset();
+      runSeoAnalysis();
+      
+      // Redirect to home after 1.5 seconds
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1500);
+    });
+
+    // Run initial analysis
+    setTimeout(runSeoAnalysis, 300);
   </script>
 </body>
 </html>

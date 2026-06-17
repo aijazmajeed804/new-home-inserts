@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Home Inserts Blog - Application Engine
  * Handles JSON fetching, rendering, routing, search, filtering, and simulated forms.
  */
@@ -292,8 +292,8 @@ function renderPostDetail() {
     return;
   }
 
-  // Set page meta title
-  document.title = `${post.title} - Home Inserts`;
+  // Set page SEO metadata, OG tags, Canonical, and Schema
+  updatePageSEOMeta(post);
 
   // Render breadcrumbs
   const breadcrumbs = document.getElementById('breadcrumbs-nav');
@@ -342,6 +342,95 @@ function renderPostDetail() {
   
   // Set up Social Share buttons
   setupShareButtons(post);
+}
+
+// Update page SEO title, canonical link, OG tags, and JSON-LD schema markup
+function updatePageSEOMeta(post) {
+  // 1. Title
+  document.title = `${post.seoTitle || post.title} - Home Inserts`;
+
+  // Helper for meta tags
+  const setMeta = (nameOrProperty, content, isProperty = false) => {
+    const selector = isProperty ? `meta[property="${nameOrProperty}"]` : `meta[name="${nameOrProperty}"]`;
+    let el = document.querySelector(selector);
+    if (!el) {
+      el = document.createElement('meta');
+      if (isProperty) el.setAttribute('property', nameOrProperty);
+      else el.setAttribute('name', nameOrProperty);
+      document.head.appendChild(el);
+    }
+    el.setAttribute('content', content);
+  };
+
+  // 2. Meta Description
+  setMeta('description', post.metaDescription || post.excerpt || '');
+
+  // 3. Canonical Link
+  let canonicalEl = document.querySelector('link[rel="canonical"]');
+  if (!canonicalEl) {
+    canonicalEl = document.createElement('link');
+    canonicalEl.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonicalEl);
+  }
+  canonicalEl.setAttribute('href', post.canonical || window.location.href);
+
+  // 4. Open Graph
+  setMeta('og:title', post.seoTitle || post.title, true);
+  setMeta('og:description', post.metaDescription || post.excerpt || '', true);
+  setMeta('og:image', post.ogImage || post.image || '', true);
+  setMeta('og:url', window.location.href, true);
+  setMeta('og:type', 'article', true);
+
+  // 5. JSON-LD Schema
+  let schemaEl = document.getElementById('post-schema-markup');
+  if (schemaEl) {
+    schemaEl.remove();
+  }
+  schemaEl = document.createElement('script');
+  schemaEl.id = 'post-schema-markup';
+  schemaEl.type = 'application/ld+json';
+  
+  // Format date
+  let dateStr = new Date().toISOString().split('T')[0];
+  if (post.date) {
+    try {
+      const parsedDate = new Date(post.date);
+      if (!isNaN(parsedDate.getTime())) {
+        dateStr = parsedDate.toISOString().split('T')[0];
+      }
+    } catch(e) {}
+  }
+
+  const cleanBody = (post.content || '').replace(/<[^>]*>/g, ' ');
+
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": window.location.href
+    },
+    "headline": post.title,
+    "description": post.metaDescription || post.excerpt || '',
+    "image": post.image || '',
+    "datePublished": dateStr,
+    "author": {
+      "@type": "Person",
+      "name": post.author || 'Administrator'
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Home Inserts",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://images.unsplash.com/photo-1600121848594-d8644e57abab?auto=format&fit=crop&q=80&w=800"
+      }
+    },
+    "articleBody": cleanBody.length > 500 ? cleanBody.slice(0, 500) + '...' : cleanBody
+  };
+
+  schemaEl.text = JSON.stringify(schemaData, null, 2);
+  document.head.appendChild(schemaEl);
 }
 
 function redirectToHome() {
