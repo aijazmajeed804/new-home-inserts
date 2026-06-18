@@ -189,6 +189,30 @@ function filterAndSearch() {
   });
 }
 
+// Helper to generate Featured Article Card HTML
+function createFeaturedCardHTML(post) {
+  return `
+    <article class="featured-card">
+      <div class="featured-media">
+        <a href="post.html?slug=${post.slug}">
+          <img src="${post.image}" alt="${post.title}">
+        </a>
+      </div>
+      <div class="featured-body">
+        <span class="featured-category">${post.category}</span>
+        <h2 class="featured-title">
+          <a href="post.html?slug=${post.slug}">${post.title}</a>
+        </h2>
+        <p class="featured-excerpt">${post.excerpt}</p>
+        <div class="featured-meta">
+          <span class="featured-author">${post.author}</span>
+          <span class="featured-date">${post.date}</span>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
 // Render specific page of cards
 function renderGridPage(page) {
   const grid = document.getElementById('articles-grid');
@@ -196,6 +220,11 @@ function renderGridPage(page) {
 
   grid.innerHTML = '';
   const total = state.filteredPosts.length;
+
+  const featuredContainer = document.getElementById('featured-article-container');
+  if (featuredContainer) {
+    featuredContainer.innerHTML = '';
+  }
   
   if (total === 0) {
     grid.innerHTML = `
@@ -209,9 +238,30 @@ function renderGridPage(page) {
     return;
   }
 
-  const start = (page - 1) * state.postsPerPage;
-  const end = Math.min(start + state.postsPerPage, total);
-  const paginatedPosts = state.filteredPosts.slice(start, end);
+  let paginatedPosts = [];
+  if (page === 1) {
+    if (featuredContainer && total > 0) {
+      // Render the most recent article in the Featured Article container
+      const featuredPost = state.filteredPosts[0];
+      featuredContainer.innerHTML = createFeaturedCardHTML(featuredPost);
+      
+      // Render the next 4 articles in the 2-column grid
+      paginatedPosts = state.filteredPosts.slice(1, Math.min(state.postsPerPage - 1, total));
+    } else {
+      paginatedPosts = state.filteredPosts.slice(0, Math.min(state.postsPerPage, total));
+    }
+  } else {
+    if (featuredContainer) {
+      // For page > 1, start from post index 5 because page 1 consumed 5 posts (1 featured + 4 grid)
+      const start = (page - 1) * state.postsPerPage - 1;
+      const end = Math.min(start + state.postsPerPage, total);
+      paginatedPosts = state.filteredPosts.slice(start, end);
+    } else {
+      const start = (page - 1) * state.postsPerPage;
+      const end = Math.min(start + state.postsPerPage, total);
+      paginatedPosts = state.filteredPosts.slice(start, end);
+    }
+  }
 
   paginatedPosts.forEach(post => {
     const card = document.createElement('article');
@@ -246,7 +296,20 @@ function renderPagination(totalPosts) {
   if (!container) return;
 
   container.innerHTML = '';
-  const totalPages = Math.ceil(totalPosts / state.postsPerPage);
+  
+  const featuredContainer = document.getElementById('featured-article-container');
+  let totalPages = 1;
+  
+  if (featuredContainer) {
+    if (totalPosts <= state.postsPerPage - 1) {
+      totalPages = 1;
+    } else {
+      totalPages = 1 + Math.ceil((totalPosts - (state.postsPerPage - 1)) / state.postsPerPage);
+    }
+  } else {
+    totalPages = Math.ceil(totalPosts / state.postsPerPage);
+  }
+  
   if (totalPages <= 1) return;
 
   for (let i = 1; i <= totalPages; i++) {
