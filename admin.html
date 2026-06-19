@@ -315,6 +315,7 @@
           <div class="admin-nav-item" data-tab="submissions" data-roles="Super Admin,Admin,Editor"><span class="nav-icon">📬</span> Review Submissions</div>
           <div class="admin-nav-item" data-tab="newsletter" data-roles="Super Admin,Admin"><span class="nav-icon">📧</span> Newsletter Emails</div>
           <div class="admin-nav-item" data-tab="settings" data-roles="Super Admin"><span class="nav-icon">⚙️</span> Site Settings</div>
+          <div class="admin-nav-item" data-tab="backup" data-roles="Super Admin"><span class="nav-icon">💾</span> Backup & Restore</div>
         </nav>
       </div>
 
@@ -960,11 +961,171 @@
         </div>
       </div>
 
+      <!-- ▌ TAB 8: BACKUP & RESTORE ▐ -->
+      <div class="admin-tab-content" id="tab-backup">
+        <div class="tab-section-title">Backup & Restore System</div>
+        <div class="tab-section-sub">Configure enterprise-grade manual backups, scheduling intervals, and system rollback recovery options.</div>
+
+        <!-- Stats Grid -->
+        <div class="admin-stats-grid">
+          <div class="admin-stat-card">
+            <div class="stat-icon">💾</div>
+            <div class="admin-stat-num" id="stat-backup-count">0</div>
+            <div class="stat-label">Total Backups</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="admin-stat-num" style="font-size: 15px; font-weight: 700; height: 30px; display: flex; align-items: center;" id="stat-backup-latest">Never</div>
+            <div class="stat-label">Latest Backup Date</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="stat-icon">💽</div>
+            <div class="admin-stat-num" id="stat-backup-storage">0% (0 KB)</div>
+            <div class="stat-label">Storage Usage (Max 5MB)</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="stat-icon">🛡️</div>
+            <div class="admin-stat-num" id="stat-backup-points">0</div>
+            <div class="stat-label">Restore Points Available</div>
+          </div>
+        </div>
+
+        <!-- Controls Grid -->
+        <div class="form-grid-2" style="margin-bottom: 24px;">
+          <!-- Left Column -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Manual Backup Card -->
+            <div class="form-card" style="padding: 24px;">
+              <div class="form-section-header" style="margin-top:0;"><span>⚡</span> Manual Snapshot</div>
+              <p style="font-size:13px; color:var(--color-body-light); margin-bottom:18px; line-height:1.5;">
+                Create an instant, secure backup of the entire website. This archives all articles, authors, submissions, comments, settings, and SEO configurations.
+              </p>
+              <button class="btn btn-approve" id="btn-create-backup-now" style="width:100%; justify-content:center; gap:8px; display:flex; align-items:center;">
+                <span>⚡</span> Create Backup Now
+              </button>
+
+              <!-- Progress bar -->
+              <div id="backup-progress-container" style="display:none; margin-top:20px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:12px; font-weight:600;">
+                  <span id="backup-progress-status" style="color:var(--color-heading);">Preparing serialization...</span>
+                  <span id="backup-progress-pct" style="color:var(--color-primary);">0%</span>
+                </div>
+                <div style="height:8px; background:#e2e8f0; border-radius:4px; overflow:hidden;">
+                  <div id="backup-progress-bar" style="height:100%; width:0%; background:var(--color-primary); border-radius:4px; transition:width 0.2s ease;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Auto Backup Scheduling -->
+            <div class="form-card" style="padding: 24px;">
+              <div class="form-section-header" style="margin-top:0;"><span>📅</span> Automatic Scheduler</div>
+              <form id="backup-scheduler-form">
+                <div class="form-group" style="margin-bottom: 15px;">
+                  <label for="backup-frequency">Backup Frequency</label>
+                  <select id="backup-frequency" class="form-control">
+                    <option value="disabled">Disabled</option>
+                    <option value="daily">Daily (Every 24h)</option>
+                    <option value="weekly">Weekly (Every 7d)</option>
+                    <option value="monthly">Monthly (Every 30d)</option>
+                  </select>
+                </div>
+                <div style="margin-bottom:15px; font-size:12px; color:var(--color-body-light); line-height:1.6;">
+                  <div>• Status: <strong id="sched-status-badge" style="color:#e06c75;">Inactive</strong></div>
+                  <div>• Last Auto-Backup: <span id="sched-last-run">Never</span></div>
+                  <div>• Next Scheduled: <span id="sched-next-run">N/A</span></div>
+                </div>
+                <button type="submit" class="btn" style="width:100%; justify-content:center; display:flex; align-items:center;">
+                  💾 Save Schedule Configuration
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Emergency Recovery Card -->
+            <div class="form-card" style="padding: 24px; border: 1.5px solid #fecaca; background: #fff5f5;">
+              <div class="form-section-header" style="margin-top:0; color:#dc2626; border-bottom-color:#fee2e2;"><span>🚨</span> Emergency Recovery Mode</div>
+              <p style="font-size:13px; color:#991b1b; margin-bottom:18px; line-height:1.5;">
+                If your website encounters formatting errors, data corruption, or display failures, immediately roll back to the latest working backup in one click.
+              </p>
+              <button class="btn btn-delete" id="btn-emergency-recovery" style="width:100%; justify-content:center; display:flex; align-items:center; background:#dc2626; color:#fff;">
+                🚨 Restore Latest Working Backup
+              </button>
+            </div>
+
+            <!-- Health Checks & Import Backup -->
+            <div class="form-card" style="padding: 24px;">
+              <div class="form-section-header" style="margin-top:0;"><span>🛡️</span> System Health & Import</div>
+              <div style="margin-bottom:15px; font-size:12px; color:var(--color-body-light); line-height:1.6;">
+                <div>• System Integrity: <span id="health-integrity-badge" style="color:#10b981; font-weight:700;">Healthy</span></div>
+                <div>• Storage Limit: <strong>5.0 MB (standard quota)</strong></div>
+              </div>
+              
+              <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button class="btn btn-view" id="btn-run-integrity-check" style="flex:1; justify-content:center; font-size:12px; padding:8px 12px; border:1px solid #dce1e7;">
+                  🔍 Run Integrity Check
+                </button>
+                <button class="btn btn-view" id="btn-simulate-ai-studio" style="flex:1; justify-content:center; font-size:12px; padding:8px 12px; border:1px solid #dce1e7;">
+                  🤖 AI Studio Sync (Point)
+                </button>
+              </div>
+
+              <div style="border-top:1.5px solid #f0f2f5; padding-top:15px;">
+                <label style="font-size: 13px; font-weight: 600; color: var(--color-heading); display: block; margin-bottom: 7px;">Import Backup File (.json)</label>
+                <input type="file" id="backup-file-input" accept=".json" style="font-size:12px; width:100%;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Backup Vault Table -->
+        <div class="table-wrapper" style="margin-bottom: 24px;">
+          <div style="padding: 20px 24px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; background: #fafbfc;">
+            <strong style="font-size:15px; color:var(--color-heading);">Backup Vault & Storage</strong>
+            <span style="font-size:12px; color:var(--color-body-light);" id="vault-subtitle">0 stored backups</span>
+          </div>
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width:25%;">Backup Name</th>
+                <th style="width:12%;">Type</th>
+                <th style="width:23%;">Created Date & Creator</th>
+                <th style="width:10%;">Size</th>
+                <th style="width:10%;">Status</th>
+                <th style="width:20%;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="backup-list-body">
+              <tr>
+                <td colspan="6" style="text-align:center; color:var(--color-body-light); padding:30px;">No backups available in vault.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- History Log Timeline -->
+        <div class="form-card" style="padding: 24px;">
+          <div class="form-section-header" style="margin-top:0;"><span>📜</span> Backup & Restore Audit Log</div>
+          <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size:12px; color:var(--color-body-light);">Chronological log of all backup, validation, and recovery operations.</span>
+            <button class="btn btn-view" id="btn-clear-backup-logs" style="padding:4px 10px; font-size:11px; width:auto; height:auto; background:none; color:#e06c75; border:1px solid #fee2e2;">
+              🗑️ Clear History
+            </button>
+          </div>
+          <div id="backup-timeline" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1.5px solid #e2e8f0; line-height: 1.6; color:#334155;">
+            <div style="color:var(--color-body-light); font-style:italic;">Log initialized...</div>
+          </div>
+        </div>
+
+      </div>
+
     </main>
   </div><!-- /.admin-layout-wrapper -->
 
   <script src="js/seo-analyzer.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/backup-system.js"></script>
   <script>
     /* ════════════════════════════════════════════════
        ADMIN DASHBOARD ENGINE
@@ -994,7 +1155,8 @@
       submissions: 'Submissions Review Inbox',
       newsletter: 'Newsletter Subscribers',
       authors: 'Author Accounts Manager',
-      settings: 'Website Configuration Settings'
+      settings: 'Website Configuration Settings',
+      backup: 'Backup & Restore System'
     };
 
     const navItems = document.querySelectorAll('.admin-nav-item[data-tab]');
@@ -1023,6 +1185,8 @@
         if (target === 'submissions') renderAdminSubmissions();
         if (target === 'newsletter') renderAdminNewsletter();
         if (target === 'authors') renderAuthorsTable();
+        if (target === 'settings') { if (window.loadSiteSettings) window.loadSiteSettings(); }
+        if (target === 'backup') { if (window.renderBackupDashboard) window.renderBackupDashboard(); }
         if (target !== 'create') exitEditMode();
       });
     });
@@ -1055,12 +1219,14 @@
       const submissionsNav = document.querySelector('.admin-nav-item[data-tab="submissions"]');
       const newsletterNav = document.querySelector('.admin-nav-item[data-tab="newsletter"]');
       const settingsNav = document.querySelector('.admin-nav-item[data-tab="settings"]');
+      const backupNav = document.querySelector('.admin-nav-item[data-tab="backup"]');
       const inboxHeader = document.getElementById('inbox-section-title');
       
       if (inboxHeader) {
         const hasVisibleInboxItem = (submissionsNav && submissionsNav.style.display !== 'none') || 
                                     (newsletterNav && newsletterNav.style.display !== 'none') ||
-                                    (settingsNav && settingsNav.style.display !== 'none');
+                                    (settingsNav && settingsNav.style.display !== 'none') ||
+                                    (backupNav && backupNav.style.display !== 'none');
         inboxHeader.style.display = hasVisibleInboxItem ? 'block' : 'none';
       }
     }
@@ -1319,6 +1485,10 @@
     ════════════════════════════════════════════════ */
     document.getElementById('admin-publish-form').addEventListener('submit', e => {
       e.preventDefault();
+
+      if (window.createAutoRestorePoint) {
+        window.createAutoRestorePoint(document.getElementById('admin-edit-id').value ? 'Before Article Update' : 'Before Article Publish');
+      }
 
       const editId             = document.getElementById('admin-edit-id').value;
       const editSrc            = document.getElementById('admin-edit-source').value;
@@ -2011,7 +2181,11 @@
     ════════════════════════════════════════════════ */
     document.getElementById('admin-settings-form').addEventListener('submit', (e) => {
       e.preventDefault();
-      showToast('Website configurations saved successfully!', 'success');
+      if (window.saveSiteSettings) {
+        window.saveSiteSettings(e);
+      } else {
+        showToast('Website configurations saved successfully!', 'success');
+      }
     });
 
     /* ════════════════════════════════════════════════
