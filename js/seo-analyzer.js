@@ -390,7 +390,7 @@
       // ==========================================
       let readabilityStatus = 'pass';
       let readabilityMsg = 'Readability is optimal.';
-      let readabilityScore = 5;
+      let readabilityCheckScore = 5;
       
       if (content) {
         const sentences = cleanText.split(/[.!?]+/).filter(s => s.trim().length > 0);
@@ -401,7 +401,7 @@
         if (avgSentenceLen > 20 || avgParaLen > 150) {
           readabilityStatus = 'warning';
           readabilityMsg = `Average sentence length: ${avgSentenceLen.toFixed(1)} words. Paragraph length: ${avgParaLen.toFixed(0)} words. Break them down.`;
-          readabilityScore = 3;
+          readabilityCheckScore = 3;
           suggestions.push('Shorten sentences and break long paragraphs into shorter ones for better readability.');
         } else {
           readabilityMsg = `Excellent readability. Average sentence length: ${avgSentenceLen.toFixed(1)} words.`;
@@ -409,9 +409,9 @@
       } else {
         readabilityStatus = 'fail';
         readabilityMsg = 'No content available to analyze readability.';
-        readabilityScore = 0;
+        readabilityCheckScore = 0;
       }
-      results.push({ id: 'readability', name: 'Readability Analysis', status: readabilityStatus, message: readabilityMsg, score: readabilityScore, maxScore: 5 });
+      results.push({ id: 'readability', name: 'Readability Analysis', status: readabilityStatus, message: readabilityMsg, score: readabilityCheckScore, maxScore: 5 });
 
       // ==========================================
       // 16. Schema Markup Validation
