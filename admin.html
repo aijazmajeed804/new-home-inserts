@@ -1107,8 +1107,21 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="author-form-image">Avatar Image URL</label>
-                <input type="url" id="author-form-image" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+                <label>Profile Image / Avatar</label>
+                <div class="author-avatar-upload-container" style="display:flex; align-items:center; gap:16px; margin-top:8px;">
+                  <div class="avatar-preview-wrapper" style="position:relative; width:64px; height:64px; border-radius:50%; border:2px solid var(--color-border); overflow:hidden; background:#f8fafc; display:flex; align-items:center; justify-content:center;">
+                    <img id="author-avatar-preview" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200" style="width:100%; height:100%; object-fit:cover;">
+                  </div>
+                  <div class="avatar-upload-actions" style="display:flex; flex-direction:column; gap:6px;">
+                    <div style="display:flex; gap:8px;">
+                      <button type="button" class="btn btn-view" id="btn-upload-avatar" style="padding:6px 12px; font-size:13px; width:auto; margin-top:0;">📤 Upload Image</button>
+                      <button type="button" class="btn btn-delete" id="btn-remove-avatar" style="padding:6px 12px; font-size:13px; width:auto; display:none; margin-top:0;">🗑️ Remove</button>
+                    </div>
+                    <span style="font-size:11px; color:var(--color-body-light);">Supports PNG, JPG, WebP, SVG, GIF.</span>
+                    <input type="file" id="author-avatar-file-input" accept="image/*" style="display:none;">
+                    <input type="hidden" id="author-form-image" value="">
+                  </div>
+                </div>
               </div>
             </div>
             <div class="form-group" style="margin-bottom: 18px;">
@@ -2463,8 +2476,8 @@
       }
 
       // ── 7. RENDER CHECKLIST ACCORDIONS ──
-      const titleChecks = ['title-len', 'meta-title-len', 'meta-desc-len'];
-      const contentChecks = ['focus-keyword-presence', 'focus-keyword-in-title', 'focus-keyword-in-desc', 'focus-keyword-in-slug', 'focus-keyword-in-first-para', 'focus-keyword-in-headings', 'content-length', 'keyword-density', 'readability'];
+      const titleChecks = ['title-len', 'meta-title-len', 'meta-desc-len', 'title-start-keyword', 'meta-desc-cta'];
+      const contentChecks = ['focus-keyword-presence', 'focus-keyword-in-title', 'focus-keyword-in-desc', 'focus-keyword-in-slug', 'focus-keyword-in-first-para', 'focus-keyword-in-headings', 'content-length', 'keyword-density', 'readability', 'heading-structure', 'content-structure', 'faq-coverage', 'semantic-coverage'];
       const linksChecks = ['internal-links', 'external-links', 'image-alt-text'];
       const techChecks = ['schema-markup', 'mobile-seo', 'canonical-url', 'og-validation', 'sitemap-inclusion', 'indexability'];
 
@@ -2716,6 +2729,44 @@
       });
     }
 
+    // Author Avatar Upload Management
+    const fileInput = document.getElementById('author-avatar-file-input');
+    const uploadBtn = document.getElementById('btn-upload-avatar');
+    const removeBtn = document.getElementById('btn-remove-avatar');
+    const previewImg = document.getElementById('author-avatar-preview');
+    const imageInput = document.getElementById('author-form-image');
+
+    if (uploadBtn && fileInput) {
+      uploadBtn.addEventListener('click', () => {
+        fileInput.click();
+      });
+    }
+
+    if (fileInput) {
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const base64String = event.target.result;
+            imageInput.value = base64String;
+            previewImg.src = base64String;
+            removeBtn.style.display = 'inline-block';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    if (removeBtn) {
+      removeBtn.addEventListener('click', () => {
+        imageInput.value = '';
+        previewImg.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200';
+        removeBtn.style.display = 'none';
+        if (fileInput) fileInput.value = '';
+      });
+    }
+
     // Toggle Author Password Visibility
     const authorPasswordInput = document.getElementById('author-form-password');
     const authorToggleBtn = document.getElementById('toggle-author-password');
@@ -2790,6 +2841,19 @@
       document.getElementById('author-edit-id').value = '';
       document.getElementById('admin-author-form').reset();
       
+      // Reset avatar preview and actions
+      document.getElementById('author-form-image').value = '';
+      const previewImg = document.getElementById('author-avatar-preview');
+      if (previewImg) {
+        previewImg.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200';
+      }
+      const removeBtn = document.getElementById('btn-remove-avatar');
+      if (removeBtn) {
+        removeBtn.style.display = 'none';
+      }
+      const fileInput = document.getElementById('author-avatar-file-input');
+      if (fileInput) fileInput.value = '';
+
       // Reset password field visibility toggler
       const pwd = document.getElementById('author-form-password');
       if (pwd) {
@@ -2824,7 +2888,22 @@
       document.getElementById('author-form-email').value = user.email;
       document.getElementById('author-form-password').value = user.password;
       document.getElementById('author-form-role').value = user.role;
-      document.getElementById('author-form-image').value = user.image || '';
+      
+      const imageVal = user.image || '';
+      document.getElementById('author-form-image').value = imageVal;
+      const previewImg = document.getElementById('author-avatar-preview');
+      if (previewImg) {
+        previewImg.src = imageVal || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200';
+      }
+      const removeBtn = document.getElementById('btn-remove-avatar');
+      if (removeBtn) {
+        if (imageVal && imageVal !== 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200') {
+          removeBtn.style.display = 'inline-block';
+        } else {
+          removeBtn.style.display = 'none';
+        }
+      }
+
       document.getElementById('author-form-bio').value = user.bio || '';
       document.getElementById('author-form-fb').value = (user.socials && user.socials.facebook) || '';
       document.getElementById('author-form-tw').value = (user.socials && user.socials.twitter) || '';

@@ -6,168 +6,259 @@
 (function(global) {
   'use strict';
 
-  // Niche-specific templates and data pools
+  // Niche-specific structural content databases
   const NicheData = {
     'Home Improvement': {
       intros: [
-        "Undertaking a home improvement project can feel both exciting and overwhelming. Whether you are aiming to increase your property's market value or simply want to create a more comfortable living environment, making informed choices is key to success. In this comprehensive guide, we will walk you through the essential steps to execute your next project flawlessly.",
-        "Your home is your sanctuary, but keeping it in prime condition requires consistent effort and smart upgrades. From structural repairs to modern efficiency upgrades, the right home improvement strategies can transform how you live. Let's delve into the top professional tips that will save you time, money, and stress."
+        "Undertaking a residential upgrade is a powerful way to enhance your living environment and boost your home's equity. However, navigating structural changes, budgeting, and material selection demands a clear strategic blueprint.",
+        "Your home is your most valuable asset, and keeping it in peak condition requires a mix of routine maintenance and high-impact upgrades. Balancing modern aesthetics with functional durability is the secret to a successful renovation."
       ],
-      h2s: [
-        "Essential Planning and Budgeting for Your Project",
-        "Top High-ROI DIY Upgrades You Can Do This Weekend",
-        "When to Hire a Professional vs. Going DIY",
-        "Modern Efficiency: Energy-Saving Upgrades to Consider"
+      headings: [
+        "Planning and Budgeting for High-ROI Projects",
+        "Top DIY Upgrades to Transform Your Space This Weekend",
+        "Determining When to Hire a Professional Contractor",
+        "Integrating Smart Energy-Saving Technologies"
       ],
       h3s: {
-        "Essential Planning and Budgeting for Your Project": [
-          "Defining Your Scope of Work",
-          "Creating a Contingency Fund for Hidden Expenses"
+        "Planning and Budgeting for High-ROI Projects": [
+          "Defining the Project Scope and Timeline",
+          "Establishing a Contingency Fund for Hidden Costs"
         ],
-        "Top High-ROI DIY Upgrades You Can Do This Weekend": [
-          "Smart Thermostat Installation",
-          "Kitchen Cabinet Refacing and Hardware Upgrades"
+        "Top DIY Upgrades to Transform Your Space This Weekend": [
+          "Installing Programmable Smart Thermostats",
+          "Refacing Cabinets and Upgrading Cabinet Hardware"
         ]
       },
       paragraphs: [
-        "Before swinging a hammer or buying supplies, a successful project starts with a detailed blueprint. Analyzing the structural requirements and establishing a clear budget prevents scope creep. Professionals recommend adding at least 15% as a contingency buffer for unexpected discoveries behind drywall or under floorboards.",
-        "Not all home upgrades require contracting professional labor. Simple actions like sealing drafts, adding insulation, and updating hardware can reduce utility bills by up to 20%. These high-yield, low-cost enhancements provide immediate comfort and long-term financial returns.",
-        "Choosing between DIY and professional contracting is a balancing act of time, skill, and safety. For electrical, plumbing, and structural modifications, hiring licensed professionals is paramount to ensure code compliance and safety. For cosmetics like painting and landscaping, DIY is an excellent way to personalize your space."
+        "Before picking up tools or purchasing materials, successful home renovators start with a detailed architectural plan. Laying out exact milestones, spacing guidelines, and material specifications prevents scope creep. Industry experts suggest adding a 15% contingency buffer to your financial plan to cover unexpected structural elements, wiring anomalies, or plumbing issues hidden behind walls.",
+        "Not all home enhancements require contracting professional labor. Simple, high-impact DIY tasks like upgrading light fixtures, sealing air leaks around doors, or applying fresh paint can elevate a room's aesthetic immediately. These modifications provide dual benefits by lowering monthly heating or cooling utility bills and increasing overall comfort.",
+        "Deciding between executing a project yourself or hiring a licensed general contractor involves assessing safety, building codes, and time constraints. For minor cosmetic work, DIY offers creative control and budget savings. However, for structural framing, main electrical service panels, or gas plumbing lines, hiring certified professionals is critical to secure permits and ensure home safety."
       ],
       ctas: [
-        "Need professional guidance on your next home upgrade? Contact our certified home consultants today for a free project estimate!",
-        "Transform your home into an energy-efficient oasis. Subscribe to our newsletter to receive weekly, step-by-step DIY guides directly in your inbox!"
+        "Thinking about upgrading your home? Contact our certified building consultants today for a free project scoping session and cost estimate!",
+        "Maximize your home's potential. Subscribe to our newsletter to receive step-by-step DIY restoration guides directly in your inbox!"
       ],
       faqs: [
-        { q: "What home improvements add the most value?", a: "Kitchen remodels, bathroom updates, and curb appeal enhancements (like landscaping and new siding) consistently yield the highest return on investment." },
-        { q: "How do I calculate a home improvement budget?", a: "Gather quotes for materials and labor, then add a 15-20% contingency fund to cover unexpected repairs that may arise during demolition." },
-        { q: "Do I need a permit for minor home improvements?", a: "Minor cosmetic changes like painting, tiling, or replacing fixtures usually do not require permits. Major structural, electrical, or plumbing changes almost always do." }
-      ]
-    },
-    'Real Estate': {
-      intros: [
-        "Navigating the real estate market requires a blend of timing, research, and financial literacy. Whether you are a first-time homebuyer looking for a starter property or an experienced investor expanding your portfolio, understanding current market patterns is crucial. Here is what you need to know to make sound property decisions.",
-        "The real estate landscape is constantly evolving, driven by economic changes and local demand shifts. Securing the best deal on a property demands a proactive approach and a clear understanding of the buying or selling process. In this guide, we reveal the insider secrets to winning in today's market."
-      ],
-      h2s: [
-        "Analyzing Current Market Trends and Interest Rates",
-        "Key Factors to Inspect Before Making an Offer",
-        "Understanding Closing Costs and Hidden Fees",
-        "Negotiation Tactics for Buyers and Sellers"
-      ],
-      h3s: {
-        "Analyzing Current Market Trends and Interest Rates": [
-          "How Rate Hikes Impact Your Purchasing Power",
-          "Identifying Buyers' vs. Sellers' Markets"
-        ],
-        "Key Factors to Inspect Before Making an Offer": [
-          "The Importance of a Professional Home Inspection",
-          "Evaluating Neighborhood Demographics and School Districts"
-        ]
-      },
-      paragraphs: [
-        "Interest rates dictate your monthly mortgage payment and overall purchasing capacity. Monitoring rate indicators and securing a pre-approval letter from a reputable lender are critical first steps. A solid pre-approval shows sellers you are a serious buyer, giving you a competitive edge in multi-offer situations.",
-        "A property might look perfect during a walkthrough, but hidden issues like foundation cracks, faulty wiring, or outdated plumbing can cost thousands to repair. A professional inspection report outlines these deficiencies, giving you leverage to negotiate price reductions or request repairs before closing.",
-        "Closing costs typically range from 2% to 5% of the loan amount and cover lender fees, title insurance, appraisal fees, and taxes. Fulfilling these financial requirements upfront prevents last-minute transaction delays. Ensure you review the Loan Estimate and Closing Disclosure forms thoroughly."
-      ],
-      ctas: [
-        "Ready to find your dream property? Connect with our top-rated local real estate agents to get access to exclusive off-market listings!",
-        "Planning to sell your home soon? Download our free Home Valuation Guide to find out how much your property is worth in today's market!"
-      ],
-      faqs: [
-        { q: "What is the first step in the home buying process?", a: "The first step is checking your credit score and obtaining a mortgage pre-approval letter to determine your actual purchase budget." },
-        { q: "How much down payment do I really need?", a: "While 20% is ideal to avoid paying private mortgage insurance (PMI), many conventional and FHA loans allow down payments as low as 3% to 3.5%." },
-        { q: "What is title insurance and why do I need it?", a: "Title insurance protects lenders and homebuyers against financial loss from disputes over property ownership, liens, or undocumented easements." }
+        { q: "What home improvement projects add the most resale value?", a: "Kitchen renovations, upscale bathroom remodels, and simple exterior curb appeal upgrades like siding or fresh landscaping consistently offer the highest return on investment." },
+        { q: "How do I avoid contractor fraud or poor workmanship?", a: "Always request licensing numbers, proof of insurance, a written contract with milestone payments, and references from past projects in your local area." },
+        { q: "Do I need a building permit for minor renovations?", a: "Cosmetic changes like flooring, painting, and changing fixtures typically do not require permits. Adding walls, changing structural beams, or running new pipes usually do." }
       ]
     },
     'Interior Design': {
       intros: [
-        "Interior design is more than just making a space look beautiful; it is about harmonizing aesthetics with functionality. By strategically utilizing color palettes, lighting configurations, and layout placements, you can dramatically shift the mood and utility of any room. Let's explore the core principles of professional spatial styling.",
-        "Creating a home that feels cohesive and reflective of your personal style requires a thoughtful approach to interior layouts. Modern design embraces clean lines, sustainable materials, and personalized touches. Here is how you can elevate your space into a professional-grade interior masterpiece."
+        "Interior design is a delicate balance of spatial geometry, color psychology, and sensory textures. When properly aligned, these elements do not just make a room look beautiful—they shape the way you live and interact with your home.",
+        "Creating a home that feels both cohesive and uniquely personal requires moving beyond simple decorating trends. It involves masterfully structuring light, scale, and functional layouts to create a seamless flow."
       ],
-      h2s: [
-        "Selecting a Cohesive Color Palette and Texture Mix",
-        "Symmetry vs. Asymmetry: Balancing Room Layouts",
-        "The Power of Layered Lighting: Task, Ambient, and Accent",
-        "Choosing Statement Furniture Pieces for Small Spaces"
+      headings: [
+        "Selecting a Cohesive Color Palette and Texture Matrix",
+        "Balancing Room Layouts: Symmetry vs. Asymmetry",
+        "Layering Light: Ambient, Task, and Accent Configurations",
+        "Selecting Multi-Functional Furniture for Cozy Spaces"
       ],
       h3s: {
-        "Selecting a Cohesive Color Palette and Texture Mix": [
+        "Selecting a Cohesive Color Palette and Texture Matrix": [
           "Applying the 60-30-10 Design Rule",
-          "Mixing Raw Wood, Metals, and Soft Textiles"
+          "Blending Wood Tones, Metals, and Textured Textiles"
         ],
-        "The Power of Layered Lighting: Task, Ambient, and Accent": [
-          "Optimizing Natural Light Ingress",
-          "Selecting the Right Color Temperatures (Kelvins)"
+        "Layering Light: Ambient, Task, and Accent Configurations": [
+          "Maximizing Natural Daylight Ingress",
+          "Selecting Ideal Kelvin Temperatures for Rooms"
         ]
       },
       paragraphs: [
-        "The 60-30-10 color rule is a classic interior formula: 60% of the room should be a dominant base color, 30% a secondary texture or color, and 10% an accent color. Mixing organic textures like linen, oak, and brushed brass creates visual depth and warmth without cluttering the space.",
-        "Lighting is the unsung hero of interior architecture. Ambient lighting provides general illumination, task lighting aids specific activities like reading or cooking, and accent lighting highlights structural details or artwork. Dimmer switches allow you to adjust the lighting temperature and intensity to suit different times of day.",
-        "In small spaces, scaling furniture is vital. Selecting items with exposed legs, multi-functional storage compartments, and light-toned upholstery makes the room feel airy and open. Avoid over-furnishing; leave clear traffic pathways to maintain a natural spatial flow."
+        "The 60-30-10 rule serves as a reliable design guide for balance: 60% of the room consists of a dominant base color (walls), 30% acts as a secondary color (furniture and rugs), and 10% is reserved for accents (pillows and art). Blending contrasting textures—such as raw boucle linen, brushed brass, and natural oak—adds visual weight and warmth without cluttering the space.",
+        "Lighting is the unsung hero of spatial design. Ambient light provides the baseline illumination, while task lighting targets specific actions like cooking or reading. Accent lights, such as picture frame downlights or LED under-cabinet strips, create focal highlights that draw the eye to architectural features. Installing dimmer switches allows you to adjust light levels to match your daily rhythms.",
+        "When designing cozy or narrow spaces, choosing furniture with the correct proportions is paramount. Opting for low-profile couches with exposed legs, multi-functional storage benches, and light-reflecting glass coffee tables creates an airy, open feel. Leaving clear traffic pathways ensures a natural flow throughout your home."
       ],
       ctas: [
-        "Book a one-on-one virtual consultation with our lead interior designer today to customize your home layout!",
-        "Want to stay ahead of the design curve? Sign up for our design digest to receive modern styling tips and exclusive decor discounts!"
+        "Ready to transform your home? Book a virtual design consultation with our lead interior architect today to personalize your layout!",
+        "Want to stay ahead of the style curve? Sign up for our design digest to receive weekly mood boards and styling tips!"
       ],
       faqs: [
-        { q: "How do I make a small room feel larger?", a: "Use light paint colors, hang mirrors to reflect light, select low-profile furniture with legs, and keep clutter to a minimum." },
-        { q: "What is the difference between interior design and interior decorating?", a: "Interior design involves spatial planning and structural changes, whereas decorating focuses purely on aesthetic adornments like furniture and accessories." },
-        { q: "How do I choose the right rug size for my living room?", a: "Make sure at least the front legs of your sofa and key chairs sit on the rug to anchor the seating arrangement cohesively." }
+        { q: "How do I make a dark room feel brighter?", a: "Use light paint colors, hang large mirrors opposite windows to reflect light, choose low-profile furniture, and utilize light-filtering sheer curtains." },
+        { q: "What is the difference between interior design and interior decorating?", a: "Interior design deals with structural changes, spatial planning, and building codes, while decorating focuses on furnishing and aesthetics like paint and drapery." },
+        { q: "How do I choose the correct rug size for my living room?", a: "Ensure the rug is large enough so that at least the front legs of all major seating pieces—such as the sofa and accent chairs—sit on top of it." }
+      ]
+    },
+    'Real Estate': {
+      intros: [
+        "Navigating the real estate market demands a sharp understanding of interest rates, localized pricing, and financing terms. Whether buying or selling, being informed is your greatest tool.",
+        "Modern real estate transactions are fast-paced and financially complex. To secure a successful deal, you must approach the market with a clear timeline and robust negotiation strategies."
+      ],
+      headings: [
+        "Analyzing Modern Market Trends and Mortgage Rates",
+        "Key Property Areas to Evaluate Before Buying",
+        "Understanding Closing Disclosures and Fees",
+        "Advanced Negotiation Tactics for Buyers and Sellers"
+      ],
+      h3s: {
+        "Analyzing Modern Market Trends and Mortgage Rates": [
+          "Understanding How Interest Rates Shift Purchasing Power",
+          "Differentiating Between Buyers' and Sellers' Markets"
+        ],
+        "Key Property Areas to Evaluate Before Buying": [
+          "The Crucial Role of Professional Home Inspections",
+          "Evaluating Neighborhood Demographics and School Districts"
+        ]
+      },
+      paragraphs: [
+        "Mortgage interest rates directly dictate your monthly housing costs and overall buying capacity. Monitoring macroeconomic indicators and securing a mortgage pre-approval from a verified lender are essential early steps. A formal pre-approval letter signals to sellers that you are a qualified buyer, giving you a distinct advantage in competitive multi-offer situations.",
+        "While a home may appear flawless during a quick tour, underlying issues can become financial drains. A licensed inspector analyzes structural elements, roofing life, electrical panel safety, and sewer line conditions. The resulting inspection report outlines necessary repairs, giving you leverage to negotiate price concessions before signing the final contract.",
+        "Closing costs typically represent 2% to 5% of the total loan balance. These costs cover title transfers, escrow services, home appraisals, and prepaying property taxes. Reviewing the formal Closing Disclosure document three days before settlement ensures there are no surprises and prevents escrow delays."
+      ],
+      ctas: [
+        "Ready to buy your dream home? Connect with our local real estate experts to find off-market listings today!",
+        "Curious about your home's current value? Get a comprehensive, professional valuation report from our local market agents!"
+      ],
+      faqs: [
+        { q: "What is the very first step of the home buying process?", a: "Checking your credit score and obtaining a mortgage pre-approval letter are the essential first steps before viewing properties." },
+        { q: "How much of a down payment do I really need to purchase a home?", a: "While 20% down avoids paying private mortgage insurance (PMI), many buyers qualify for FHA loans at 3.5% down or conventional loans at 3% down." },
+        { q: "Why is title insurance necessary in a real estate transaction?", a: "Title insurance protects both the buyer and lender from past ownership claims, undiscovered liens, or boundary disputes that might threaten your ownership." }
       ]
     }
   };
 
-  // Fallback for categories not explicitly configured
+  // Default templates to fall back on in case of other categories
   const DefaultTemplates = {
     intros: [
-      "Creating a beautiful, functional living space is a universal goal for homeowners and design enthusiasts alike. To achieve this, it helps to understand the foundational principles that govern modern properties. In this expert guide, we discuss key strategies to help you optimize your home layout and lifestyle.",
-      "Every property holds hidden potential waiting to be unlocked. With the right techniques and a clear execution plan, you can turn any standard space into an extraordinary sanctuary. Let's dive deep into the essential rules and methods you should adopt."
+      "Optimizing your residential environment is a rewarding journey that enhances comfort and functional value. To succeed, you must approach your design and maintenance goals with structured planning.",
+      "Every property has hidden potential. With the right tools, materials, and execution strategies, you can turn any standard layout into a highly organized and beautiful home."
     ],
-    h2s: [
+    headings: [
       "Foundational Principles and Planning Steps",
-      "Essential Tools and Materials You Will Need",
+      "Essential Tools and Quality Materials Required",
       "Key Techniques for Flawless Execution",
-      "Maintenance and Long-Term Value Protection"
+      "Long-Term Maintenance and Value Preservation"
     ],
     h3s: {
       "Foundational Principles and Planning Steps": [
-        "Setting Realistic Milestone Goals",
-        "Assessing Structural and Zoning Regulations"
+        "Setting Realistic Milestone Budgets",
+        "Assessing Local Zoning and Safety Regulations"
       ],
       "Key Techniques for Flawless Execution": [
-        "Optimizing Work Sequences to Avoid Rework",
-        "Quality Control Inspections and Troubleshooting"
+        "Sequencing Construction Steps to Prevent Errors",
+        "Conducting Quality Checks and Inspections"
       ]
     },
     paragraphs: [
-      "Any project, big or small, begins with proper scoping. By analyzing the site requirements and cataloging necessary items, you set yourself up for a stress-free execution. Industry standards recommend conducting a thorough inspection before commencing.",
-      "Acquiring high-quality materials ensures durability and performance. It is always best to prioritize sustainable, premium-grade items that can withstand wear and tear. Utilizing the correct tools prevents damage and guarantees clean results.",
-      "Long-term maintenance is the key to protecting your investment. Regular check-ups, cleaning, and prompt repairs prevent minor wear from turning into costly replacements. Create a seasonal maintenance checklist to keep your property in top-tier shape."
+      "Every successful upgrade starts with detailed planning. Defining your exact scope, measuring coordinates, and listing required supplies prevents mid-project delays. Planning ensures that all structural modifications comply with safety regulations and building codes.",
+      "Using premium-grade materials is the best way to guarantee longevity and structural integrity. While budget-friendly alternatives are tempting, investing in high-durability items prevents frequent replacements and repairs. Quality tools also ensure clean lines and professional finishes.",
+      "Protecting your property value over time requires consistent maintenance. Establishing a seasonal checklist—such as cleaning gutters, inspecting HVAC systems, and sealing exterior trim—keeps minor issues from developing into costly structural failures."
     ],
     ctas: [
-      "Explore more expert tips by checking out our curated articles and property guides on Home Inserts!",
-      "Subscribing to our updates is the easiest way to stay informed. Join thousands of homeowners receiving our expert tips weekly!"
+      "Explore more expert home tips by checking out our curated articles on Home Inserts!",
+      "Stay informed with the latest design tips. Subscribe to our weekly home newsletter today!"
     ],
     faqs: [
-      { q: "How do I start planning my project?", a: "Begin by writing down your goals, researching design inspiration, creating a budget checklist, and consulting local building codes." },
-      { q: "How can I maintain my home's value over time?", a: "Consistently inspect for roof leaks, maintain exterior paint, update HVAC filters, and keep landscaping trimmed and healthy." },
-      { q: "Should I buy premium materials or standard ones?", a: "For structural and high-traffic areas, always invest in premium materials. For purely cosmetic, low-traffic areas, standard materials are usually sufficient." }
+      { q: "How do I start planning my home project?", a: "Write down your goals, research inspirations, list your materials, calculate your budget, and consult local building codes." },
+      { q: "How can I maintain my home's resale value?", a: "Address roof leaks immediately, maintain exterior paint, replace HVAC filters regularly, and keep your landscaping healthy." },
+      { q: "Should I buy high-end materials or standard ones?", a: "For high-traffic, high-wear areas, always choose high-end, durable materials. For low-impact cosmetic details, standard materials are fine." }
     ]
   };
 
-  // Map user categories to template keys
+  // Helper to map and select the right category templates
   function getTemplateData(category) {
     if (NicheData[category]) return NicheData[category];
     
     // Group similar categories
-    if (['Home Decor', 'Interior Design'].includes(category)) return NicheData['Interior Design'];
-    if (['Real Estate', 'Property Guides', 'Home Buying', 'Home Selling'].includes(category)) return NicheData['Real Estate'];
-    if (['Home Improvement', 'Renovation', 'Architecture', 'Smart Homes', 'Kitchen', 'Sleep & Comfort', 'Outdoor & Landscaping'].includes(category)) {
+    const catLower = (category || '').toLowerCase();
+    if (catLower.includes('decor') || catLower.includes('design')) return NicheData['Interior Design'];
+    if (catLower.includes('real estate') || catLower.includes('property') || catLower.includes('buying') || catLower.includes('selling') || catLower.includes('guide')) {
+      return NicheData['Real Estate'];
+    }
+    if (catLower.includes('improvement') || catLower.includes('renovate') || catLower.includes('diy') || catLower.includes('architecture') || catLower.includes('smart') || catLower.includes('kitchen') || catLower.includes('comfort') || catLower.includes('outdoor') || catLower.includes('landscaping')) {
       return NicheData['Home Improvement'];
     }
     
     return DefaultTemplates;
+  }
+
+  // Generate highly detailed visual prompts for Midjourney / DALL-E
+  function generateDetailedImagePrompts(category, topic, focusKeyword) {
+    const cleanTopic = topic || focusKeyword || category;
+    let scene = "";
+    let focusObj = "";
+    
+    const catLower = (category || '').toLowerCase();
+    if (catLower.includes('kitchen')) {
+      scene = "A luxury modern kitchen featuring custom white oak cabinets, sleek waterfall quartz countertops, and minimalist pendant lighting over a large central island.";
+      focusObj = "focusing on premium materials, warm natural lighting, and high-end styling";
+    } else if (catLower.includes('bedroom') || catLower.includes('sleep') || catLower.includes('comfort')) {
+      scene = "A serene and cozy bedroom styled with neutral linen bedding, sage green accent walls, soft ambient light, and organic decorative elements.";
+      focusObj = "emphasizing tranquility, warm organic textures, and premium bedding details";
+    } else if (catLower.includes('bathroom')) {
+      scene = "A luxury contemporary bathroom with a floating vanity, matte black plumbing fixtures, glass walk-in shower, and textured stone wall tiling.";
+      focusObj = "focusing on sleek geometric details, clean lines, and luxury materials";
+    } else if (catLower.includes('decor') || catLower.includes('interior')) {
+      scene = "A modern living room featuring mid-century modern furniture, a large textured wool rug, warm organic accessories, and natural light streaming in from floor-to-ceiling windows.";
+      focusObj = "highlighting perfect spatial layout, 60-30-10 color harmony, and cozy home styling";
+    } else if (catLower.includes('garden') || catLower.includes('outdoor') || catLower.includes('landscaping')) {
+      scene = "A beautifully designed backyard patio, with premium stone pavers, a custom wood pergola, ambient string lighting, and lush bordering flowerbeds.";
+      focusObj = "illustrating high-end outdoor living spaces, landscaping design, and natural stone textures";
+    } else if (catLower.includes('real estate') || catLower.includes('property') || catLower.includes('buying') || catLower.includes('selling')) {
+      scene = "A clean exterior photograph of a modern luxury home, showcasing manicured lawns, architectural landscape lighting, and golden hour reflections.";
+      focusObj = "exhibiting premium property exterior, exceptional curb appeal, and modern architecture";
+    } else if (catLower.includes('smart') || catLower.includes('tech')) {
+      scene = "A modern smart home entry hallway with integrated keyless lock tech, subtle glow accents, and clean minimalist interior design.";
+      focusObj = "focusing on smart technology integration and luxury modern details";
+    } else {
+      scene = `A stunning, light-filled residential space themed around ${category.toLowerCase()} concepts, with professional interior design, clean lines, and curated furniture.`;
+      focusObj = `focusing on high-end architectural aesthetics and clean composition for "${cleanTopic}"`;
+    }
+
+    const keywordInsert = focusKeyword ? `, highlighting ${focusKeyword.toLowerCase()} naturally in the composition,` : '';
+
+    return {
+      featured: `A premium architectural photograph of ${scene}${keywordInsert} realistic textures, photorealistic, 8k resolution, shot on 35mm lens, f/2.8, warm natural morning light, high-end home improvement blog banner --ar 16:9`,
+      social: `A professional editorial social share banner showcasing ${cleanTopic}. ${scene} clean minimalist grid layout, vibrant curated colors, negative space for text overlays, commercial lifestyle style --ar 1.91:1`,
+      thumbnail: `A close-up details shot focusing on ${focusKeyword || cleanTopic} and ${focusObj}. Shallow depth of field, warm light, crisp focus on textures, blog card thumbnail asset, 8k resolution --ar 1:1`
+    };
+  }
+
+  // Dictionary of dynamic, context-specific paragraphs to make generation human-like
+  function generateDynamicContextParagraph(category, heading, focusKeyword, secondaryKeywords, idx) {
+    const fKeyword = focusKeyword || 'home styling';
+    const secKeywords = secondaryKeywords && secondaryKeywords.length > 0 ? secondaryKeywords : ['quality materials', 'smart planning'];
+    const sKeyword1 = secKeywords[idx % secKeywords.length];
+    const sKeyword2 = secKeywords[(idx + 1) % secKeywords.length];
+
+    const hLower = heading.toLowerCase();
+
+    // Home Improvement Paragraphs
+    if (hLower.includes('budget') || hLower.includes('plan')) {
+      return `When executing a plan for **${fKeyword}**, establishing a clear project boundary is the most critical factor. Many homeowners find that skipping this phase leads directly to design drift. By incorporating **${sKeyword1}**, you build a solid foundation. Make sure to checklist your material pricing, shipping fees, and labor expenses early. We recommend keeping a spreadsheet detailing every item name, exact measurements, and supplier quotes to ensure full oversight.`;
+    }
+    if (hLower.includes('diy') || hLower.includes('upgrades') || hLower.includes('transform')) {
+      return `For those looking to tackle modifications over a weekend, focusing on **${fKeyword}** can yield incredible results. Implementing **${sKeyword1}** allows you to customize the aesthetics without overspending. Consider focusing on focal updates—like bathroom sink faucets, cabinet hardware, or accent wall painting—which require minimal tool investment but completely change the room's energy. Remember, prep work is 80% of the job: clean surfaces, sand rough edges, and mask corners before starting.`;
+    }
+    if (hLower.includes('hire') || hLower.includes('professional') || hLower.includes('contractor')) {
+      return `Determining whether a project calls for a DIY approach or professional licensing depends on safety risk. If you are modifying structural framing, running new gas lines, or adding circuits to the main breaker, prioritizing **${sKeyword1}** and hiring a general contractor is essential. They secure municipal permits, carry liability insurance, and guarantee that the work passes inspections. For aesthetic and cosmetic updates, however, a DIY project can save thousands in labor fees.`;
+    }
+    if (hLower.includes('energy') || hLower.includes('technology') || hLower.includes('smart')) {
+      return `Modern homes benefit immensely from smart integration. By focusing on **${fKeyword}** alongside **${sKeyword2}**, you can create a highly efficient system. Smart thermostats, automated lighting panels, and high-efficiency windows reduce heat loss and lower carbon footprints. The upfront cost of these energy-efficient technologies is quickly recouped through lower monthly utility bills, making them smart upgrades for any forward-thinking homeowner.`;
+    }
+
+    // Interior Design Paragraphs
+    if (hLower.includes('color') || hLower.includes('palette') || hLower.includes('texture')) {
+      return `Creating a cohesive color scheme is the first step in successful interior design. When balancing **${fKeyword}**, the goal is to mix contrasting finishes to create depth. By weaving **${sKeyword1}** into your palette, you prevent rooms from looking flat. Pair organic textures like rough jute, raw linen, and matte solid oak with sleek elements like polished brass or polished marble. This contrast keeps the eye moving and makes the space feel layered and premium.`;
+    }
+    if (hLower.includes('balance') || hLower.includes('layout') || hLower.includes('symmetry')) {
+      return `Spatial layout dictates the natural flow of a room. Whether you prefer formal symmetry (matching chairs flanking a fireplace) or the modern feel of asymmetry, keeping **${fKeyword}** in mind ensures that the furniture scales match. Always maintain standard clearances: walk passages should be 36 inches wide, and coffee tables should sit 18 inches from the sofa. This meticulous routing makes the space highly functional.`;
+    }
+    if (hLower.includes('light') || hLower.includes('ambient') || hLower.includes('task')) {
+      return `Lighting should never be a single overhead fixture. High-end designers layer lighting in three distinct zones: ambient (general illumination), task (focused beams for reading or food prep), and accent (subtle LEDs highlights). Utilizing **${sKeyword2}** helps highlight architectural features. Make sure to choose bulb color temperatures that match the room's purpose: warm tones (2700K) for bedrooms and crisp white (4000K) for kitchens.`;
+    }
+
+    // Real Estate Paragraphs
+    if (hLower.includes('market') || hLower.includes('rates') || hLower.includes('trends')) {
+      return `Macroeconomic trends dictate buying behaviors. For those monitoring **${fKeyword}**, tracking mortgage interest rate shifts is key to determining purchasing capacity. Integrating **${sKeyword1}** into your market research reveals whether local inventories favor buyers or sellers. Sellers' markets feature low inventory and bidding wars, while buyers' markets provide price negotiation flexibility and closing cost concessions.`;
+    }
+    if (hLower.includes('areas') || hLower.includes('evaluate') || hLower.includes('inspect')) {
+      return `Evaluating property conditions before submitting a binding offer protects you from financial stress. Inspectors analyze crucial areas like structural foundations, roofing conditions, electrical wiring standards, and main plumbing drains. Discussing **${sKeyword2}** with your home inspector helps identify issues like foundation settlement or outdated wiring. This inspection report is your main tool to negotiate repairs or price deductions.`;
+    }
+
+    // Default Fallback Paragraphs
+    return `Executing your strategies for **${fKeyword}** requires attention to detail. By prioritizing **${sKeyword1}** and sequencing your tasks methodically, you avoid costly rework. Ensure you select materials that balance immediate cost with long-term durability. Quality finishes, robust structural elements, and clear spatial planning are the keys to a project that looks professional and stands the test of time.`;
   }
 
   const AIGenerator = {
@@ -183,7 +274,7 @@
         topic = '',
         category = 'Home Improvement',
         author = 'Administrator',
-        tone = 'Professional',
+        tone = 'Expert',
         length = 'Medium'
       } = inputs;
 
@@ -224,29 +315,36 @@
 
       // Outline Heading Tree
       const h1 = topicClean;
-      const h2s = [...data.h2s];
-      // Inject focus keyword into at least one H2
-      if (pKeyword && h2s.length > 0) {
-        h2s[1] = `${h2s[1]}: Integrating ${pKeyword}`;
-      }
-
+      const categoryHeadings = data.headings || DefaultTemplates.headings;
+      
       const outlineStructure = [];
-      h2s.forEach(h2 => {
+      categoryHeadings.forEach((h2, idx) => {
+        // Inject focus keyword naturally into one H2 heading to avoid robotic patterns
+        let headingText = h2;
+        if (idx === 1 && pKeyword) {
+          if (category.toLowerCase().includes('design') || category.toLowerCase().includes('decor')) {
+            headingText = `How to Integrate ${pKeyword} into Your Styling`;
+          } else if (category.toLowerCase().includes('real estate')) {
+            headingText = `Evaluating ${pKeyword} in Today's Market`;
+          } else {
+            headingText = `Step-by-Step Guide to Implementing ${pKeyword}`;
+          }
+        }
+
         const subHeadings = data.h3s[h2] || [
           `Key Factors for ${h2}`,
-          `Common Mistakes to Avoid`
+          `Common Pitfalls to Avoid`
         ];
+        
         outlineStructure.push({
-          heading: h2,
+          heading: headingText,
           level: 2,
           subHeadings: subHeadings.map(h3 => ({ heading: h3, level: 3 }))
         });
       });
 
-      // Midjourney / DALL-E Image Prompts
-      const featuredImagePrompt = `A high-end architectural photo of a beautifully lit, modern room themed around ${category.toLowerCase()}, displaying clean design, realistic textures, highly detailed, photorealistic, 8k resolution, shot on 35mm lens --ar 16:9`;
-      const socialImagePrompt = `Modern social sharing banner representing ${topicClean}, clean minimalist background, vibrant accent colors, typography overlay placeholder --ar 1.91:1`;
-      const thumbnailPrompt = `Close-up shot of architectural details representing ${pKeyword || category}, soft lighting, warm depth of field, minimalist card asset --ar 1:1`;
+      // Generate detailed, premium visual prompts
+      const imagePrompts = generateDetailedImagePrompts(category, topicClean, pKeyword);
 
       return {
         inputs,
@@ -261,11 +359,7 @@
         faqs: [...data.faqs],
         cta: data.ctas[0],
         excerpt: metaDescription.substring(0, 140),
-        imagePrompts: {
-          featured: featuredImagePrompt,
-          social: socialImagePrompt,
-          thumbnail: thumbnailPrompt
-        }
+        imagePrompts
       };
     },
 
@@ -279,15 +373,14 @@
         focusKeyword = '',
         secondaryKeywords = [],
         category = 'Home Improvement',
-        tone = 'Professional',
+        tone = 'Expert',
         outline = [],
         faqs = [],
-        cta = '',
-        inputs = {}
+        cta = ''
       } = blueprint;
 
       const pKeyword = focusKeyword || 'modern home upgrades';
-      const secKeywords = secondaryKeywords.length > 0 ? secondaryKeywords : ['home optimization'];
+      const secKeywords = secondaryKeywords.length > 0 ? secondaryKeywords : ['quality craftsmanship'];
       const data = getTemplateData(category);
 
       let html = '';
@@ -301,65 +394,65 @@
       html += `    <li><a href="#faq-section">Frequently Asked Questions (FAQ)</a></li>\n`;
       html += `  </ul>\n</div>\n\n`;
 
-      // 2. Introduction (Paragraph 1 - must include focus keyword in first para)
+      // 2. Introduction Paragraph (incorporating focus keyword naturally)
       const introSeed = data.intros[0];
-      const introText = `When focusing on **${pKeyword}**, ${introSeed.charAt(0).toLowerCase() + introSeed.slice(1)}`;
+      const introText = `For many homeowners, executing a successful project centered on **${pKeyword}** is a major goal. ${introSeed} By integrating components of **${secKeywords[0]}**, you can achieve professional results that stand the test of time. Let's delve into the essential principles and tips to get you started.`;
       html += `<p>${introText}</p>\n\n`;
 
-      // Key Takeaways Box
+      // 3. Key Takeaways Box
       html += `<div class="callout-box info-box">\n  <h5>💡 Key Takeaways</h5>\n  <ul>\n`;
-      html += `    <li>Always establish a firm budget checklist before beginning any project targeting ${pKeyword}.</li>\n`;
-      html += `    <li>Leverage high-ROI upgrades like energy-efficient lighting and localized spatial modifications first.</li>\n`;
-      html += `    <li>Incorporate secondary keywords like <strong>${secKeywords[0]}</strong> to maintain search relevance.</li>\n`;
+      html += `    <li><strong>Smart Budgeting:</strong> Establish a detailed budget sheet and include a 15% contingency fund before purchasing materials.</li>\n`;
+      html += `    <li><strong>Texture Pairing:</strong> When working with styling elements, combine natural wood tones, soft textiles, and matte metals for spatial depth.</li>\n`;
+      html += `    <li><strong>Safety First:</strong> For main structural, electrical, and gas lines modifications, always hire a licensed professional.</li>\n`;
       html += `  </ul>\n</div>\n\n`;
 
-      // 3. Body H2 & H3 Sections
+      // 4. Body H2 & H3 Sections
       outline.forEach((section, idx) => {
         const anchor = `section-${idx}`;
         html += `<h2 id="${anchor}">${section.heading}</h2>\n`;
         
-        // Add a body paragraph for H2
-        const paraIndex = idx % data.paragraphs.length;
-        let pText = data.paragraphs[paraIndex];
-        // Inject keyword randomly
-        if (pKeyword && idx === 1) {
-          pText = `To maximize the impact of **${pKeyword}**, it helps to implement structured approaches. ${pText}`;
-        }
+        // Dynamic, non-generic body paragraph
+        const pText = generateDynamicContextParagraph(category, section.heading, pKeyword, secKeywords, idx);
         html += `<p>${pText}</p>\n\n`;
 
         // Render H3 Subheadings
         section.subHeadings.forEach((sub, subIdx) => {
           html += `<h3>${sub.heading}</h3>\n`;
-          html += `<p>Properly exploring the sub-topic of ${sub.heading.toLowerCase()} allows homeowners to avoid common pitfalls. Ensure you measure twice and cut once, and double-check all clearances. Using high-grade materials makes a noticeable difference in long-term longevity and performance.</p>\n\n`;
           
-          // Inject a structured list or custom visual element
+          let h3Text = `Exploring the specifics of ${sub.heading.toLowerCase()} is vital to prevent errors. Homeowners should prioritize matching material durability to local climate conditions and traffic levels. Measuring structural clearances twice and purchasing correct installation supplies prevents delays and guarantees a seamless look.`;
           if (idx === 0 && subIdx === 0) {
-            html += `<ul>\n  <li><strong>Planning Phase:</strong> Draft blueprints and list tools.</li>\n  <li><strong>Procurement:</strong> Source sustainable wood, metal hardware, and accessories.</li>\n  <li><strong>Execution:</strong> Apply layouts methodically, starting from corner junctions.</li>\n</ul>\n\n`;
+            h3Text += ` Make sure to organize your milestones logically, allowing wet phases (like drywalling or tiling) to dry completely before installing final fixtures or trim.`;
+          }
+          html += `<p>${h3Text}</p>\n\n`;
+          
+          // Inject custom bullet list
+          if (idx === 0 && subIdx === 0) {
+            html += `<ul>\n  <li><strong>Preparation Stage:</strong> Measure exact clearances and cross-reference zoning regulations.</li>\n  <li><strong>Procurement Stage:</strong> Source high-grade materials and gather recommended safety gear.</li>\n  <li><strong>Installation Stage:</strong> Work methodically from structural corners out to the margins.</li>\n</ul>\n\n`;
           }
           
-          // Inject a Table
+          // Inject comparison table
           if (idx === 1 && subIdx === 0) {
-            html += `<table class="comparison-table">\n  <thead>\n    <tr><th>Upgrade Aspect</th><th>Expected Cost</th><th>Value Addition</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>Cosmetic Refacing</td><td>Low</td><td>Medium</td></tr>\n    <tr><td>Hardware & Smart Tech</td><td>Medium</td><td>High</td></tr>\n    <tr><td>Structural Changes</td><td>High</td><td>High</td></tr>\n  </tbody>\n</table>\n\n`;
+            html += `<table class="comparison-table">\n  <thead>\n    <tr><th>Renovation Aspect</th><th>Relative Cost</th><th>Value Addition</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>Cosmetic Modifications</td><td>Low-Medium</td><td>Immediate Visual Appeal</td></tr>\n    <tr><td>Structural Updates</td><td>High</td><td>Long-Term Equity</td></tr>\n    <tr><td>Smart Tech Additions</td><td>Medium</td><td>Utility Efficiency</td></tr>\n  </tbody>\n</table>\n\n`;
           }
         });
       });
 
-      // 4. Pros & Cons Block
-      html += `<div class="pros-cons-grid">\n  <div class="pros-box">\n    <h5>✅ Pros</h5>\n    <ul>\n      <li>Substantially raises the aesthetic and functional appeal of your residence.</li>\n      <li>Delivers notable energy savings and utility bill reductions over time.</li>\n      <li>Increases property equity, which is vital for future resale.</li>\n    </ul>\n  </div>\n  <div class="cons-box">\n    <h5>❌ Cons</h5>\n    <ul>\n      <li>Requires upfront capital planning and temporary disruption of space.</li>\n      <li>Some DIY attempts can lead to sub-optimal results if not carefully researched.</li>\n    </ul>\n  </div>\n</div>\n\n`;
+      // 5. Pros & Cons Block
+      html += `<div class="pros-cons-grid">\n  <div class="pros-box">\n    <h5>✅ Advantages</h5>\n    <ul>\n      <li>Substantially increases structural and visual property value.</li>\n      <li>Enhances residential utility, space flow, and daily comfort.</li>\n      <li>Provides opportunities to lower energy costs through modern materials.</li>\n    </ul>\n  </div>\n  <div class="cons-box">\n    <h5>❌ Considerations</h5>\n    <ul>\n      <li>Requires upfront budgeting and scheduling to minimize home disruptions.</li>\n      <li>Demands high attention to material quality and contractor hiring vetting.</li>\n    </ul>\n  </div>\n</div>\n\n`;
 
-      // 5. FAQ Accordion Section (Schema-ready)
+      // 6. FAQ Accordion Section (Schema-ready)
       html += `<h2 id="faq-section">Frequently Asked Questions (FAQ)</h2>\n`;
       html += `<div class="faq-accordion-wrapper">\n`;
-      faqs.forEach((faq, fIdx) => {
+      faqs.forEach((faq) => {
         html += `  <div class="faq-accordion-item">\n    <button type="button" class="faq-accordion-header">❓ ${faq.q}</button>\n    <div class="faq-accordion-content">\n      <p>${faq.a}</p>\n    </div>\n  </div>\n`;
       });
       html += `</div>\n\n`;
 
-      // 6. Conclusion and CTA
+      // 7. Conclusion and CTA
       html += `<h2>Conclusion</h2>\n`;
-      html += `<p>In conclusion, taking the time to plan out your ${category.toLowerCase()} projects is the single most effective way to ensure a high-quality finish. By adhering to the principles outlined above—and keeping your focus keyword <strong>${pKeyword}</strong> at the front of your strategies—you will enjoy a beautiful, efficient, and valuable property for years to come.</p>\n\n`;
+      html += `<p>In summary, achieving high-quality results when executing your plan for **${pKeyword}** relies on planning, selecting premium materials, and sequencing tasks methodically. By balancing structural safety with design aesthetics, you ensure a home that is both beautiful and structurally sound for years to come.</p>\n\n`;
 
-      html += `<div class="callout-box cta-box">\n  <h5>📞 Get Started Today</h5>\n  <p>${cta}</p>\n  <p>For more home renovation and lifestyle ideas, explore our full library of articles on <a href="index.html">Home Inserts</a>, or contact our team via <a href="contact.html">our Contact Page</a>.</p>\n</div>\n`;
+      html += `<div class="callout-box cta-box">\n  <h5>📞 Let's Discuss Your Project</h5>\n  <p>${cta}</p>\n  <p>For more home renovation tips and design ideas, explore our full library of articles on <a href="index.html">Home Inserts</a>, or submit your questions through <a href="contact.html">our Contact Page</a>.</p>\n</div>\n`;
 
       return html;
     }
