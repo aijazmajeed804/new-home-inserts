@@ -1825,12 +1825,13 @@
     ════════════════════════════════════════════════ */
 
     // Check role and update header text
-    (function() {
+    window.syncLoggedUserInfo = function() {
       const loggedUser = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
       if (loggedUser) {
         document.getElementById('admin-user-info-text').innerHTML = `Logged in as: <strong>${loggedUser.email}</strong> &nbsp;·&nbsp; ${loggedUser.role}`;
       }
-    })();
+    };
+    syncLoggedUserInfo();
 
     // ── Live Clock ────────────────────────────────
     function updateClock() {
@@ -2710,7 +2711,10 @@
             <button class="action-btn btn-delete" onclick="deleteAuthor('${user.id}')">🗑️ Delete</button>
           `;
         } else {
-          actionButtons = `<span style="font-size:12px; color:var(--color-body-light); font-style:italic;">Active Session (You)</span>`;
+          actionButtons = `
+            <button class="action-btn btn-edit" onclick="editAuthor('${user.id}')">✏️ Edit</button>
+            <span style="font-size:12px; color:var(--color-body-light); font-style:italic;">(You)</span>
+          `;
         }
 
         tr.innerHTML = `
@@ -2812,6 +2816,28 @@
           users[idx].socials = { facebook, twitter };
           
           localStorage.setItem('home_inserts_users', JSON.stringify(users));
+
+          // Sync session storage if self-updated
+          const currentLoggedIn = JSON.parse(sessionStorage.getItem('home_inserts_logged_in_user'));
+          if (currentLoggedIn && currentLoggedIn.id === editId) {
+            const updatedSelf = {
+              ...currentLoggedIn,
+              name: name,
+              email: email,
+              role: role,
+              image: image,
+              bio: bio,
+              socials: { facebook, twitter }
+            };
+            sessionStorage.setItem('home_inserts_logged_in_user', JSON.stringify(updatedSelf));
+            if (typeof syncLoggedUserInfo === 'function') {
+              syncLoggedUserInfo();
+            }
+            if (typeof setupSidebarRoleAccess === 'function') {
+              setupSidebarRoleAccess();
+            }
+          }
+
           showToast('Author profile updated successfully!', 'success');
         }
       } else {
