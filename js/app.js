@@ -51,6 +51,26 @@ async function loadPosts() {
     const localPostsStr = localStorage.getItem('home_inserts_user_posts');
     const localPosts = localPostsStr ? JSON.parse(localPostsStr) : [];
     
+    // Check and publish scheduled posts
+    let hasChanges = false;
+    localPosts.forEach(post => {
+      if (post.status === 'Scheduled' && post.scheduledTime) {
+        const schedTime = new Date(post.scheduledTime).getTime();
+        if (Date.now() >= schedTime) {
+          post.status = 'Published';
+          const dateObj = new Date(schedTime);
+          post.date = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+          hasChanges = true;
+          if (window.logDiagnosticAction) {
+            window.logDiagnosticAction('System Scheduler', `Automatically published scheduled article: "${post.title}"`, 'Success');
+          }
+        }
+      }
+    });
+    if (hasChanges) {
+      localStorage.setItem('home_inserts_user_posts', JSON.stringify(localPosts));
+    }
+    
     // Merge: Guest posts appear first as they are "new"
     let merged = [...localPosts, ...jsonPosts];
     
@@ -68,7 +88,39 @@ async function loadPosts() {
     showToast('Failed to load articles. Running in fallback mode.', 'error');
     
     // Fallback in case fetch fails due to absolute path issues in local file protocol
-    state.posts = getFallbackPosts();
+    const localPostsStr = localStorage.getItem('home_inserts_user_posts');
+    const localPosts = localPostsStr ? JSON.parse(localPostsStr) : [];
+    
+    // Check and publish scheduled posts in fallback path too
+    let hasChanges = false;
+    localPosts.forEach(post => {
+      if (post.status === 'Scheduled' && post.scheduledTime) {
+        const schedTime = new Date(post.scheduledTime).getTime();
+        if (Date.now() >= schedTime) {
+          post.status = 'Published';
+          const dateObj = new Date(schedTime);
+          post.date = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+          hasChanges = true;
+          if (window.logDiagnosticAction) {
+            window.logDiagnosticAction('System Scheduler', `Automatically published scheduled article: "${post.title}"`, 'Success');
+          }
+        }
+      }
+    });
+    if (hasChanges) {
+      localStorage.setItem('home_inserts_user_posts', JSON.stringify(localPosts));
+    }
+    
+    const fallbackPosts = typeof getFallbackPosts === 'function' ? getFallbackPosts() : [];
+    let merged = [...localPosts, ...fallbackPosts];
+    
+    const blockedStr = localStorage.getItem('home_inserts_blocked_posts') || '[]';
+    const blocked = JSON.parse(blockedStr);
+    if (blocked.length > 0) {
+      merged = merged.filter(p => !blocked.includes(p.id));
+    }
+    
+    state.posts = merged;
     state.filteredPosts = [...state.posts];
   }
 }

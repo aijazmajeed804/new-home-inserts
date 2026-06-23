@@ -173,45 +173,196 @@
     return DefaultTemplates;
   }
 
-  // Generate highly detailed visual prompts for Midjourney / DALL-E
-  function generateDetailedImagePrompts(category, topic, focusKeyword) {
-    const cleanTopic = topic || focusKeyword || category;
-    let scene = "";
-    let focusObj = "";
-    
+  // Selected premium high-quality Unsplash image pools by niche
+  const ImagePools = {
+    'Home Improvement': [
+      '1600585154340-be6161a56a0c', // Luxury house / kitchen
+      '1556911220-e15b29be8c8f', // Kitchen wood
+      '1556912173-3bb406ef7e77', // Cabinetry
+      '1564013799919-ab600027ffc6', // Kitchen remodel
+      '1507089947368-19c1da9775ae', // Modern design counter
+      '1600607687939-ce8a6c25118c', // Kitchen/dining area
+      '1584622650111-993a426fbf0a', // Tiled bathroom
+      '1552321554-5fefe8c9ef14', // Attic renovation
+      '1600566753086-00f18fb6b3ea', // Modern bathroom remodel
+      '1513694203232-719a280e022f', // Home construction/sunlight
+    ],
+    'Interior Design': [
+      '1616486338812-3dadae4b4ace', // Living room cozy
+      '1616594039964-ae9021a400a0', // Cozy bedroom
+      '1540518614846-7eded433c457', // Bedroom neutral
+      '1583847268964-b28dc8f51f92', // Minimalist layout
+      '1586023492125-27b2c045efd7', // Design console
+      '1600210492486-724fe5c67fb0', // Styled room
+      '1615529182906-c4d52123b88a', // Scandinavian styling
+      '1616046229478-9901c5536a45', // Cozy dining room
+      '1617806118233-18e1db207f62', // Minimalist living room
+      '1618221195710-dd6b41faaea6', // Modern interior living room
+    ],
+    'Real Estate': [
+      '1600596542815-ffad4c1539a9', // Luxury exterior
+      '1512917774080-9991f1c4c750', // Mansion exterior
+      '1600585154526-990dced4db0d', // Modern house layout
+      '1580587771525-78b9dba3b914', // Classic suburban house
+      '1605276374104-dee2a0ed3cd6', // Facade
+      '1628744504164-054a8523c14c', // Entrance
+      '1600607687920-437a5b736737', // Modern architecture building
+      '1512915922686-57c11dde9b6b', // Real estate agency / modern house
+      '1600573472591-ee6b68d14c68', // Luxury villa
+    ],
+    'DIY': [
+      '1508962914676-134849a727f0', // Hand tools
+      '1530124560072-acab361097b6', // Painting a wall
+      '1504148455328-c376907d081c', // Workshop space
+      '1581092918056-0c4c3acd3789', // Repair works
+    ],
+    'Smart Homes': [
+      '1558002038-1055907df827', // Smart keyless lock
+      '1563720223185-11003d516935', // Touchscreen controls
+      '1598908314732-07113901949e', // Solar panel house
+    ],
+    'Outdoor & Landscaping': [
+      '1600585154526-990dced4db0d', // Backyard garden layout
+      '1508962914676-134849a727f0', // Stone path
+      '1598908314732-07113901949e', // Green roof / solar panels
+    ]
+  };
+
+  function getUniqueNicheImage(category, topic, focusKeyword) {
+    let pool = ImagePools['Home Improvement'];
     const catLower = (category || '').toLowerCase();
-    if (catLower.includes('kitchen')) {
-      scene = "A luxury modern kitchen featuring custom white oak cabinets, sleek waterfall quartz countertops, and minimalist pendant lighting over a large central island.";
-      focusObj = "focusing on premium materials, warm natural lighting, and high-end styling";
-    } else if (catLower.includes('bedroom') || catLower.includes('sleep') || catLower.includes('comfort')) {
-      scene = "A serene and cozy bedroom styled with neutral linen bedding, sage green accent walls, soft ambient light, and organic decorative elements.";
-      focusObj = "emphasizing tranquility, warm organic textures, and premium bedding details";
-    } else if (catLower.includes('bathroom')) {
-      scene = "A luxury contemporary bathroom with a floating vanity, matte black plumbing fixtures, glass walk-in shower, and textured stone wall tiling.";
-      focusObj = "focusing on sleek geometric details, clean lines, and luxury materials";
-    } else if (catLower.includes('decor') || catLower.includes('interior')) {
-      scene = "A modern living room featuring mid-century modern furniture, a large textured wool rug, warm organic accessories, and natural light streaming in from floor-to-ceiling windows.";
-      focusObj = "highlighting perfect spatial layout, 60-30-10 color harmony, and cozy home styling";
-    } else if (catLower.includes('garden') || catLower.includes('outdoor') || catLower.includes('landscaping')) {
-      scene = "A beautifully designed backyard patio, with premium stone pavers, a custom wood pergola, ambient string lighting, and lush bordering flowerbeds.";
-      focusObj = "illustrating high-end outdoor living spaces, landscaping design, and natural stone textures";
-    } else if (catLower.includes('real estate') || catLower.includes('property') || catLower.includes('buying') || catLower.includes('selling')) {
-      scene = "A clean exterior photograph of a modern luxury home, showcasing manicured lawns, architectural landscape lighting, and golden hour reflections.";
-      focusObj = "exhibiting premium property exterior, exceptional curb appeal, and modern architecture";
-    } else if (catLower.includes('smart') || catLower.includes('tech')) {
-      scene = "A modern smart home entry hallway with integrated keyless lock tech, subtle glow accents, and clean minimalist interior design.";
-      focusObj = "focusing on smart technology integration and luxury modern details";
-    } else {
-      scene = `A stunning, light-filled residential space themed around ${category.toLowerCase()} concepts, with professional interior design, clean lines, and curated furniture.`;
-      focusObj = `focusing on high-end architectural aesthetics and clean composition for "${cleanTopic}"`;
+    if (catLower.includes('decor') || catLower.includes('design')) {
+      pool = ImagePools['Interior Design'];
+    } else if (catLower.includes('real estate') || catLower.includes('property') || catLower.includes('buying') || catLower.includes('selling') || catLower.includes('guide')) {
+      pool = ImagePools['Real Estate'];
+    } else if (catLower.includes('diy')) {
+      pool = ImagePools['DIY'];
+    } else if (catLower.includes('smart') || catLower.includes('tech') || catLower.includes('security')) {
+      pool = ImagePools['Smart Homes'];
+    } else if (catLower.includes('outdoor') || catLower.includes('landscaping') || catLower.includes('garden')) {
+      pool = ImagePools['Outdoor & Landscaping'];
     }
 
-    const keywordInsert = focusKeyword ? `, highlighting ${focusKeyword.toLowerCase()} naturally in the composition,` : '';
+    // Gather all currently used images in database
+    const usedImages = new Set();
+    const getPhotoId = (url) => {
+      const match = (url || '').match(/photo-([a-zA-Z0-9-]+)/);
+      return match ? match[1] : null;
+    };
+
+    const collectFromPosts = (posts) => {
+      if (Array.isArray(posts)) {
+        posts.forEach(p => {
+          if (p.image) {
+            const id = getPhotoId(p.image);
+            if (id) usedImages.add(id);
+          }
+        });
+      }
+    };
+
+    if (typeof state !== 'undefined' && Array.isArray(state.posts)) {
+      collectFromPosts(state.posts);
+    }
+    const localPostsStr = localStorage.getItem('home_inserts_user_posts');
+    if (localPostsStr) {
+      try {
+        collectFromPosts(JSON.parse(localPostsStr));
+      } catch (e) {}
+    }
+
+    // Find first unused image in pool
+    let selectedId = null;
+    for (let id of pool) {
+      if (!usedImages.has(id)) {
+        selectedId = id;
+        break;
+      }
+    }
+
+    // Fallback to any unused image from any pool
+    if (!selectedId) {
+      const allPools = Object.values(ImagePools).flat();
+      for (let id of allPools) {
+        if (!usedImages.has(id)) {
+          selectedId = id;
+          break;
+        }
+      }
+    }
+
+    // If still none, pick one from the pool and add timestamp query for absolute uniqueness
+    if (!selectedId) {
+      const fallbackId = pool[Math.floor(Math.random() * pool.length)];
+      const uniqueUrl = `https://images.unsplash.com/photo-${fallbackId}?auto=format&fit=crop&q=80&w=800&unique=${Date.now()}`;
+      if (window.logDiagnosticAction) {
+        window.logDiagnosticAction('AI Studio', `Assigned unique featured image (fallback): ${uniqueUrl} for topic: "${topic}"`, 'Success');
+      }
+      return uniqueUrl;
+    }
+
+    const uniqueUrl = `https://images.unsplash.com/photo-${selectedId}?auto=format&fit=crop&q=80&w=800`;
+    if (window.logDiagnosticAction) {
+      window.logDiagnosticAction('AI Studio', `Assigned unique featured image: ${uniqueUrl} for topic: "${topic}"`, 'Success');
+    }
+    return uniqueUrl;
+  }
+
+  // Generate highly detailed visual prompts for Midjourney / DALL-E
+  function generateDetailedImagePrompts(category, topic, focusKeyword, secondaryKeywords, title, contentContext) {
+    const cleanTopic = topic || focusKeyword || category;
+    const cleanTitle = title || cleanTopic;
+    const secKeywordsStr = (secondaryKeywords && secondaryKeywords.length > 0) ? secondaryKeywords.join(', ') : 'modern styling';
+    const context = contentContext || 'architectural space';
+
+    const cameras = [
+      "Sony A7R V camera with 35mm lens, f/2.8 aperture",
+      "Canon EOS R5 camera with 50mm f/1.2 lens",
+      "Nikon Z9 camera with 24-70mm f/2.8 lens",
+      "Fujifilm GFX 100S medium format camera",
+      "Hasselblad H6D-100c camera, architectural photography"
+    ];
+    const lightings = [
+      "warm morning sun streaming through large glass windows, soft shadows",
+      "golden hour sunlight casting long warm glows, interior styling",
+      "diffused soft twilight lighting, cinematic evening atmosphere",
+      "bright, airy natural daylight, high-end design styling",
+      "moody low-key architectural lighting, accent highlights"
+    ];
+    const angles = [
+      "symmetrical architectural view, eye-level perspective",
+      "low-angle wide-angle lens shot, spacious composition",
+      "editorial interior design catalog framing, straight-on shot",
+      "modern clean minimalist composition, rules of thirds layout",
+      "high-end real estate showcase angle, clean vertical lines"
+    ];
+
+    // Compute simple hash from title to select configurations deterministically but uniquely
+    let hash = 0;
+    const combinedStr = `${cleanTitle}-${focusKeyword}-${category}`;
+    for (let i = 0; i < combinedStr.length; i++) {
+      hash = combinedStr.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    hash = Math.abs(hash);
+
+    const camera = cameras[hash % cameras.length];
+    const lighting = lightings[(hash + 1) % lightings.length];
+    const angle = angles[(hash + 2) % angles.length];
+
+    const featuredPrompt = `A premium architectural photograph showcasing ${cleanTopic}. Concept theme: "${cleanTitle}". Weaved with details of ${secKeywordsStr}. Styled for ${category}, ${angle}, shot on ${camera}, illuminated by ${lighting}. Photorealistic textures, 8k resolution, award-winning home editorial design --ar 16:9`;
+
+    const socialPrompt = `Professional social media share banner for: "${cleanTitle}". Features a modern layout of ${cleanTopic} in the style of a luxury ${category} guide. Clear composition, commercial design, high-end editorial look, negative space for text overlay, shot on ${camera} --ar 1.91:1`;
+
+    const thumbnailPrompt = `Close-up detail macro shot focusing on "${focusKeyword || cleanTopic}". Context: ${context}. Shallow depth of field, sharp focus on textures (wood, metal, stone), warm atmospheric lighting, high-end blog card thumbnail, 8k resolution --ar 1:1`;
+
+    if (window.logDiagnosticAction) {
+      window.logDiagnosticAction('AI Studio', `Generated detailed image prompts for "${cleanTitle}"`, 'Info');
+    }
 
     return {
-      featured: `A premium architectural photograph of ${scene}${keywordInsert} realistic textures, photorealistic, 8k resolution, shot on 35mm lens, f/2.8, warm natural morning light, high-end home improvement blog banner --ar 16:9`,
-      social: `A professional editorial social share banner showcasing ${cleanTopic}. ${scene} clean minimalist grid layout, vibrant curated colors, negative space for text overlays, commercial lifestyle style --ar 1.91:1`,
-      thumbnail: `A close-up details shot focusing on ${focusKeyword || cleanTopic} and ${focusObj}. Shallow depth of field, warm light, crisp focus on textures, blog card thumbnail asset, 8k resolution --ar 1:1`
+      featured: featuredPrompt,
+      social: socialPrompt,
+      thumbnail: thumbnailPrompt
     };
   }
 
@@ -246,7 +397,7 @@
       return `Spatial layout dictates the natural flow of a room. Whether you prefer formal symmetry (matching chairs flanking a fireplace) or the modern feel of asymmetry, keeping **${fKeyword}** in mind ensures that the furniture scales match. Always maintain standard clearances: walk passages should be 36 inches wide, and coffee tables should sit 18 inches from the sofa. This meticulous routing makes the space highly functional.`;
     }
     if (hLower.includes('light') || hLower.includes('ambient') || hLower.includes('task')) {
-      return `Lighting should never be a single overhead fixture. High-end designers layer lighting in three distinct zones: ambient (general illumination), task (focused beams for reading or food prep), and accent (subtle LEDs highlights). Utilizing **${sKeyword2}** helps highlight architectural features. Make sure to choose bulb color temperatures that match the room's purpose: warm tones (2700K) for bedrooms and crisp white (4000K) for kitchens.`;
+      return `Lighting should never be a single overhead fixture. High-end designers layer lighting in three distinct zones: ambient (general illumination), task (focused beams for reading or food prep), and accent (subtle LEDs highlights). Utilizing **${sKeyword2}** helps highlight architectural features. Make sure to choose bulb color temperatures that match the room's purpose: warm tones (2700K) for bedrooms and clean white (4000K) for kitchens.`;
     }
 
     // Real Estate Paragraphs
@@ -343,8 +494,18 @@
         });
       });
 
+      // Select unique niche-relevant image
+      const image = getUniqueNicheImage(category, topicClean, pKeyword);
+
       // Generate detailed, premium visual prompts
-      const imagePrompts = generateDetailedImagePrompts(category, topicClean, pKeyword);
+      const imagePrompts = generateDetailedImagePrompts(
+        category,
+        topicClean,
+        pKeyword,
+        secKwList,
+        seoTitle,
+        metaDescription
+      );
 
       return {
         inputs,
@@ -359,7 +520,8 @@
         faqs: [...data.faqs],
         cta: data.ctas[0],
         excerpt: metaDescription.substring(0, 140),
-        imagePrompts
+        imagePrompts,
+        image
       };
     },
 

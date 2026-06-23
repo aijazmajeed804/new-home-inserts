@@ -212,6 +212,9 @@
       backups.unshift(backup);
       localStorage.setItem('home_inserts_backups', JSON.stringify(backups));
 
+      // Prune backups if total count exceeds 5
+      cleanOldBackups();
+
       // Append log entry
       logAction(creator, `Created ${type} backup: "${backup.name}" (Size: ${(sizeBytes / 1024).toFixed(2)} KB)`, 'Success');
 
@@ -235,6 +238,19 @@
       backups = backups.filter(b => b.id !== toDelete.id);
       localStorage.setItem('home_inserts_backups', JSON.stringify(backups));
       logAction('SYSTEM', `Storage warning cleanup: Deleted oldest restore point "${toDelete.name}"`, 'Warning');
+    }
+  }
+
+  // Auto clean old backups (keeps only the 5 most recent backups of any type to prevent quota overflow)
+  function cleanOldBackups() {
+    let backups = JSON.parse(localStorage.getItem('home_inserts_backups') || '[]');
+    if (backups.length > 5) {
+      const toDelete = backups.slice(5);
+      backups = backups.slice(0, 5);
+      localStorage.setItem('home_inserts_backups', JSON.stringify(backups));
+      toDelete.forEach(b => {
+        logAction('SYSTEM', `Quota cleanup: Auto-deleted oldest backup "${b.name}"`, 'Warning');
+      });
     }
   }
 
@@ -876,5 +892,8 @@
               .replace(/"/g, "&quot;")
               .replace(/'/g, "&#039;");
   }
+
+  // Export diagnostic logging globally
+  window.logDiagnosticAction = logAction;
 
 })();

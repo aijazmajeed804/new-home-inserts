@@ -2162,6 +2162,13 @@
       let userPosts = userPostsStr ? JSON.parse(userPostsStr) : [];
       const index = userPosts.findIndex(p => p.id === id);
 
+      // Find title before deleting for diagnostic logging
+      let postTitle = `ID: ${id}`;
+      if (typeof state !== 'undefined' && state.posts) {
+        const found = state.posts.find(p => p.id === id);
+        if (found) postTitle = found.title;
+      }
+
       if (index > -1) {
         userPosts.splice(index, 1);
         localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
@@ -2170,6 +2177,10 @@
         const blocked = JSON.parse(blockedStr);
         blocked.push(id);
         localStorage.setItem('home_inserts_blocked_posts', JSON.stringify(blocked));
+      }
+
+      if (window.logDiagnosticAction) {
+        window.logDiagnosticAction('CMS Manager', `Deleted article: "${postTitle}" (ID: ${id})`, 'Warning');
       }
 
       showToast('Article deleted successfully.', 'success');
@@ -2275,12 +2286,18 @@
         }
 
         localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
+        if (window.logDiagnosticAction) {
+          window.logDiagnosticAction('CMS Manager', `Updated article: "${postData.title}" (ID: ${postData.id}, Status: ${postData.status})`, 'Success');
+        }
         showToast('Article updated successfully!', 'success');
       } else {
         // ── CREATE NEW ──
         postData.id = Date.now();
         userPosts.unshift(postData);
         localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
+        if (window.logDiagnosticAction) {
+          window.logDiagnosticAction('CMS Manager', `Published new article: "${postData.title}" (ID: ${postData.id}, Status: ${postData.status})`, 'Success');
+        }
         showToast(status === 'Pending Review' ? 'Article submitted for review!' : 'Article published successfully!', 'success');
       }
 
@@ -3214,6 +3231,9 @@
       };
 
       // Generate outline using Local AI Engine
+      if (window.logDiagnosticAction) {
+        window.logDiagnosticAction('AI Studio', `Initiated outline blueprint generation for topic: "${inputs.topic || inputs.primaryKeyword}" (Category: ${inputs.category}, Tone: ${inputs.tone})`, 'Info');
+      }
       studioBlueprint = AIGenerator.generateOutline(inputs);
 
       // Populate Step 2 blueprint details
@@ -3322,6 +3342,9 @@
 
       // Generate HTML article using Local AI Engine
       const htmlContent = AIGenerator.generateArticle(studioBlueprint);
+      if (window.logDiagnosticAction) {
+        window.logDiagnosticAction('AI Studio', `Generated full SEO article body for: "${studioBlueprint.seoTitle || studioBlueprint.h1}" (Length estimation: ${Math.max(2, Math.ceil(htmlContent.split(' ').length / 200))} min read)`, 'Success');
+      }
 
       // Populate visual WYSIWYG Editor
       const editorBody = document.getElementById('studio-editor-body');
@@ -3482,7 +3505,7 @@
         focusKeyword:       studioBlueprint.focusKeyword,
         secondaryKeywords:  studioBlueprint.secondaryKeywords.join(','),
         slug:               studioBlueprint.slug,
-        image:              'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800',
+        image:              studioBlueprint.image || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800',
         imageAlt:           studioBlueprint.focusKeyword,
         author:             studioBlueprint.inputs.authorName,
         category:           studioBlueprint.inputs.category,
@@ -3683,13 +3706,41 @@
         return;
       }
 
+      // Quality Control Validation 1: Check required fields before save
+      const postTitle = studioBlueprint.seoTitle || studioBlueprint.h1;
+      const postContent = editorBody.innerHTML || '';
+      const postContentText = editorBody.innerText || '';
+      const postImage = studioBlueprint.image || '';
+
+      if (!postTitle || postTitle.trim().length === 0) {
+        showToast('Quality Control Failed: Article title is missing.', 'error');
+        if (window.logDiagnosticAction) {
+          window.logDiagnosticAction('AI Studio QC', 'Publish rejected: Title is missing', 'Error');
+        }
+        return;
+      }
+      if (postContentText.trim().length < 50) {
+        showToast('Quality Control Failed: Article content is too short (must be > 50 characters).', 'error');
+        if (window.logDiagnosticAction) {
+          window.logDiagnosticAction('AI Studio QC', `Publish rejected: Content length is only ${postContentText.trim().length} chars (minimum 50)`, 'Error');
+        }
+        return;
+      }
+      if (!postImage) {
+        showToast('Quality Control Failed: Featured image is missing.', 'error');
+        if (window.logDiagnosticAction) {
+          window.logDiagnosticAction('AI Studio QC', 'Publish rejected: Featured image is missing', 'Error');
+        }
+        return;
+      }
+
       // Compile final post object
       const userPosts = JSON.parse(localStorage.getItem('home_inserts_user_posts') || '[]');
       const dateString = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
       
       const finalPost = {
         id: Date.now(),
-        title: studioBlueprint.seoTitle || studioBlueprint.h1,
+        title: postTitle,
         slug: studioBlueprint.slug,
         category: studioBlueprint.inputs.category,
         tags: [studioBlueprint.inputs.category, "AI Generated"],
@@ -3698,12 +3749,12 @@
         authorId: studioBlueprint.inputs.authorId,
         status: publishStatus, // Published, Draft, Scheduled
         scheduledTime: publishStatus === 'Scheduled' ? scheduleDate : null,
-        readTime: `${Math.max(2, Math.ceil(editorBody.innerText.split(' ').length / 200))} min read`,
-        image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800',
+        readTime: `${Math.max(2, Math.ceil(postContentText.split(' ').length / 200))} min read`,
+        image: postImage,
         imageAlt: studioBlueprint.focusKeyword,
         excerpt: studioBlueprint.metaDescription.substring(0, 140),
         articleDescription: studioBlueprint.metaDescription,
-        content: editorBody.innerHTML,
+        content: postContent,
         // SEO
         seoTitle: studioBlueprint.seoTitle,
         metaTitle: studioBlueprint.metaTitle,
@@ -3711,17 +3762,50 @@
         focusKeyword: studioBlueprint.focusKeyword,
         secondaryKeywords: studioBlueprint.secondaryKeywords,
         canonical: `https://homeinserts.com/articles/${studioBlueprint.slug}`,
-        ogImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800'
+        ogImage: postImage
       };
 
+      // Save to localStorage
       userPosts.unshift(finalPost);
       localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
 
-      showToast(`AI Article successfully saved as ${publishStatus}!`, 'success');
+      // Quality Control Validation 2: Read back and verify attributes match exactly
+      const readBackPosts = JSON.parse(localStorage.getItem('home_inserts_user_posts') || '[]');
+      const verifiedPost = readBackPosts.find(p => p.id === finalPost.id);
+      
+      if (!verifiedPost) {
+        showToast('Quality Control Failed: Verification read-back from local storage failed.', 'error');
+        if (window.logDiagnosticAction) {
+          window.logDiagnosticAction('AI Studio QC', `Database write verification failed for: "${postTitle}"`, 'Error');
+        }
+        return;
+      }
+      if (verifiedPost.title !== finalPost.title || verifiedPost.image !== finalPost.image || verifiedPost.status !== finalPost.status) {
+        showToast('Quality Control Failed: Saved attributes mismatch.', 'error');
+        if (window.logDiagnosticAction) {
+          window.logDiagnosticAction('AI Studio QC', `Saved attributes mismatch for post ID ${finalPost.id}`, 'Error');
+        }
+        return;
+      }
 
-      // Reload posts and redirect to Content Library
+      // Quality Control Validation 3: Verify propagation to active state
       loadPosts().then(() => {
+        const globalPost = state.posts.find(p => p.id === finalPost.id);
+        if (!globalPost) {
+          showToast('Quality Control Failed: Post could not be found in active state.', 'error');
+          if (window.logDiagnosticAction) {
+            window.logDiagnosticAction('AI Studio QC', `Post ID ${finalPost.id} failed to propagate to global state.`, 'Error');
+          }
+          return;
+        }
+
+        if (window.logDiagnosticAction) {
+          window.logDiagnosticAction('AI Studio', `Successfully verified and saved article: "${postTitle}" (Status: ${publishStatus})`, 'Success');
+        }
+
+        showToast(`AI Article successfully saved as ${publishStatus}!`, 'success');
         updateStats();
+
         // Clear stepper form inputs
         document.getElementById('studio-primary-keyword').value = '';
         document.getElementById('studio-secondary-keywords').value = '';
@@ -3729,6 +3813,8 @@
         
         // Show Content Library
         document.getElementById('btn-show-studio-library').click();
+      }).catch(err => {
+        showToast(`Quality Control Failed: propagation check failed. ${err.message}`, 'error');
       });
     });
 
@@ -3845,6 +3931,9 @@
         userPosts[idx].status = 'Published';
         userPosts[idx].date = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
         localStorage.setItem('home_inserts_user_posts', JSON.stringify(userPosts));
+        if (window.logDiagnosticAction) {
+          window.logDiagnosticAction('AI Studio', `Published AI generated article from library: "${userPosts[idx].title}" (ID: ${id})`, 'Success');
+        }
         showToast('Article published successfully!', 'success');
         loadPosts().then(() => {
           updateStats();
@@ -3856,8 +3945,13 @@
     window.deleteAIPost = function(id) {
       if (!confirm('Are you sure you want to delete this generated article?')) return;
       const userPosts = JSON.parse(localStorage.getItem('home_inserts_user_posts') || '[]');
+      const post = userPosts.find(p => p.id === id);
+      const postTitle = post ? post.title : `ID: ${id}`;
       const filtered = userPosts.filter(p => p.id !== id);
       localStorage.setItem('home_inserts_user_posts', JSON.stringify(filtered));
+      if (window.logDiagnosticAction) {
+        window.logDiagnosticAction('AI Studio', `Deleted AI generated article: "${postTitle}" (ID: ${id})`, 'Warning');
+      }
       showToast('Article deleted.', 'success');
       loadPosts().then(() => {
         updateStats();
